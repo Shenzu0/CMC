@@ -20,5 +20,48 @@
     </form>
     <div id="message" class="message"></div>
 </div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Empêche la soumission par défaut du formulaire
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    console.log('Tentative de connexion avec:', { username, password }); // Log des données avant l'envoi
+
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    })
+    .then(response => {
+        console.log('Réponse du serveur:', response);
+        return response.json();
+    })
+    .then(data => {
+        const messageDiv = document.getElementById('message');
+        if (data.success) {
+            messageDiv.textContent = 'Connexion réussie, redirection...';
+            messageDiv.style.color = 'green';
+            setTimeout(() => {
+                window.location.href = '/index.html'; 
+            }, 1000);
+        } else {
+            messageDiv.textContent = data.error;
+            messageDiv.style.color = 'red';
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la connexion:', error);
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'Erreur interne';
+        messageDiv.style.color = 'red';
+    });
+});
+
+</script>
+
 </body>
 </html>
