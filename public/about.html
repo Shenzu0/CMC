@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique de Vêtements, Bijoux et Accessoires pour Femmes à Calais - Petites et Grandes Tailles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez notre boutique de vêtements, bijoux et accessoires pour femmes, située à Calais. Nous proposons une large gamme de tailles, petites et grandes tailles. Visitez-nous à Calais Nord pour trouver la tenue parfaite pour toute occasion.">
+    <meta name="keywords" content="boutique vêtements femmes, bijoux femmes, accessoires femmes, grandes tailles, petites tailles, Calais, Calais Nord, mode féminine, shopping Calais">
+    <meta name="author" content="CMC Mode">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Boutique de Vêtements, Bijoux et Accessoires pour Femmes à Calais - Petites et Grandes Tailles">
+    <meta property="og:description" content="Découvrez notre boutique de vêtements, bijoux et accessoires pour femmes, située à Calais. Nous proposons une large gamme de tailles, petites et grandes tailles. Visitez-nous à Calais Nord pour trouver la tenue parfaite pour toute occasion.">
+    <meta property="og:url" content="https://www.votre-site.com">
+    <meta property="og:image" content="https://www.votre-site.com/images/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="CMC Mode">
+    <meta property="og:see_also" content="https://www.facebook.com/people/CMC-Mode/100083366191144/">
+    <meta property="business:contact_data:street_address" content="51 Rue de la Mer">
+    <meta property="business:contact_data:locality" content="Calais">
+    <meta property="business:contact_data:region" content="Hauts-de-France">
+    <meta property="business:contact_data:postal_code" content="62100">
+    <meta property="business:contact_data:country_name" content="France">
+    <title>À propos</title>
+    <link rel="stylesheet" href="./css/about.css">
+    <link rel="stylesheet" href="./navbar.css">
+</head>
+<body>
+    <div class="unique-navbar transparent" id="unique-navbar">
+        <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="Logo" class="unique-navbar-logo" id="navbar-logo"></a>
+        <div class="burger-menu" id="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="close-menu-icon" id="close-menu-icon">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <nav class="unique-navbar-content" id="unique-navbar-content">
+            <a href="index.html" class="nav-link">ACCUEIL</a>
+            <a href="shop.html" class="nav-link">PRODUITS</a>
+            <a href="about.html" class="nav-link">À PROPOS</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+            <a href="faq.html" class="nav-link">FAQ</a>
+            <a href="blog.html" class="nav-link">BLOG</a>
+            <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <div class="about-section">
+            <h1 class="about-title">À propos de nous</h1>
+            <div class="about-description" id="about-description">
+                <p>Bienvenue chez CMC MODE, votre destination mode incontournable au cœur de Calais Nord. Nous sommes une petite boutique pleine de charme, dédiée à vous offrir une expérience shopping unique et personnalisée située dans l'une des plus belles rues de Calais, notre boutique est un véritable trésor pour les amateurs de mode. Nous proposons une sélection soignée de vêtements tendance et de qualité, adaptés à toutes les occasions et à tous les styles. Que vous recherchiez une tenue élégante pour une soirée spéciale ou des pièces décontractées pour votre garde-robe quotidienne, vous trouverez chez nous des articles qui vous inspireront.</p>
+                <p>Chez CMC MODE, chaque visiteur est accueilli avec chaleur et attention. Notre objectif est de vous offrir un service exceptionnel et des conseils mode personnalisés pour vous aider à trouver les pièces qui vous conviennent parfaitement. Nous croyons en la mode comme une expression de soi et nous sommes ici pour vous aider à exprimer votre style unique. Nous avons hâte de vous accueillir et de partager notre passion pour la mode avec vous. Venez découvrir nos collections et laissez-vous séduire par l'atmosphère conviviale et authentique.</p>
+            </div>
+            <div class="edit-buttons" id="edit-buttons">
+                <button class="edit-button" onclick="editDescription()">Modifier la description</button>
+                <button class="edit-button" onclick="saveDescription()" style="display: none;">Enregistrer</button>
+            </div>
+        </div>
+
+        <div class="cta-container">
+            <div class="cta-localisation_component">
+                <div class="cta_content-left">
+                    <h2 class="text-color-yellow heading-medium">Nous trouver</h2>
+                    <div class="horizontal-divider"></div>
+                    <p class="text-style-3lines text-style-muted">En plein cœur de Calais nord</p>
+                    <div class="cta_content-item">
+                        <h3 class="text-size-large">Localisation</h3>
+                        <p class="text-style-muted">51 Rue de la Mer, 62100 Calais</p>
+                    </div>
+                    <div class="cta_content-item">
+                        <h3 class="text-size-large">Ouverture</h3>
+                        <p class="text-style-muted">Lundi - Vendredi de 8 à 20 heures</p>
+                    </div>
+                </div>
+            </div>
+            <div class="cta_content-right">
+                <div class="cta-map w-embed w-iframe">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.999727682843!2d2.3372264156745766!3d48.86083317928764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47dc4c6d1eaae2f5%3A0x409d5c08b34f450!2s51%20Rue%20de%20la%20Mer%2C%2062100%20Calais%2C%20France!5e0!3m2!1sen!2sfr!4v1645628412512!5m2!1sen!2sfr" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-wrapper">
+            <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="footer-logo"></a>
+            <div class="footer-links">
+                <a href="#">Politique de données</a>
+            </div>
+            <div class="social-links">
+                <a href="#"><img src="images/facebook-icon.svg" alt="Facebook"></a>
+            </div>
+        </div>
+        <p class="bFoot">&copy; 2024 CMC MODE. Tous droits réservés.</p>
+    </footer>
+
+</body>
+</html>

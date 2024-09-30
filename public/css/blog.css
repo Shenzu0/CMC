@@ -1,0 +1,330 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Lato', sans-serif;
+}
+
+
+.section {
+    padding: 50px 20px;
+}
+
+.blog-header {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.blog-header h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: ;
+}
+
+.blog-header p {
+    font-size: 1.2em;
+}
+
+.post {
+    background-color: #312d2d;
+    border: 1px solid #444;
+    border-radius: 10px;
+    margin: 20px auto; /* Centrer horizontalement */
+    padding: 20px;
+    max-width: 600px; /* Limite la largeur maximale du conteneur */
+    width: 100%; /* Assurez-vous qu'il occupe toute la largeur disponible jusqu'à la limite */
+    
+}
+
+.post-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.comment-section {
+    margin-top: 30px;
+}
+
+.comment {
+    background-color: #ffffff;
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    color: #000000;
+} 
+
+.comment-author {
+    font-weight: bold;
+}
+
+.comment-text {
+    margin-top: 5px;
+}
+
+.comment-form {
+    margin-top: 20px;
+}
+
+.comment-form textarea,
+.comment-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #444;
+    color: #ffffff;
+}
+
+.comment-form button {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.comment-form button:hover {
+    background-color: #e65c00;
+}
+
+.facebook-section {
+margin-top: 50px;
+padding: 20px;
+background-color: #222;
+border-radius: 10px;
+text-align: center; /* Center align the content */
+}
+
+.facebook-section h2 {
+text-align: center;
+font-size: 2.5em;
+margin-bottom: 20px;
+}
+
+.fb-page {
+display: inline-block; /* Center the fb-page */
+width: 100%;
+}
+
+.publication-title {
+    color: white; /* Change la couleur du texte en blanc */
+    font-size: 3em; /* Agrandit la taille du texte */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ajoute une ombre au texte pour une meilleure lisibilité */
+}
+
+.publication-description {
+color: white; /* Change la couleur du texte en blanc */
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ajoute une ombre au texte pour une meilleure lisibilité */
+}
+
+
+
+.modal-content input[type="text"],
+.modal-content textarea,
+.modal-content input[type="file"] {
+    width: calc(100% - 20px); /* Full width minus padding */
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #e65c00;
+}
+
+.modal-content label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px; /* Max width for the modal */
+    border-radius: 10px; /* Rounded corners */
+}
+
+#articleModalContent,
+#commentModalContent {
+    max-width: 500px; /* Reduce the max width */
+    width: 90%; /* Ensure it uses the full width up to max-width */
+}
+
+#articleModalContent label,
+#commentModalContent label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#articleModalContent input[type="text"],
+#commentModalContent input[type="text"],
+#articleModalContent textarea,
+#commentModalContent textarea,
+#articleModalContent input[type="file"] {
+    width: calc(100% - 20px); /* Full width minus padding */
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #eee;
+}
+
+#articleModalContent button,
+#commentModalContent button {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#articleModalContent button:hover,
+#commentModalContent button:hover {
+    background-color: #e65c00;
+}
+.fade-in {
+opacity: 0;
+transform: translateY(20px);
+transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+}
+
+.fade-in-visible {
+opacity: 1;
+transform: translateY(0);
+}
+
+/* Effet de lumière */
+.light-effect {
+position: relative;
+overflow: hidden;
+}
+
+.light-effect::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+transform: translateX(-50%) translateY(-50%) scale(0);
+transition: transform 0.5s ease-out;
+z-index: 0;
+}
+
+.light-effect:hover::before {
+transform: translateX(-50%) translateY(-50%) scale(1.2);
+transition: transform 1s ease-out;
+}
+
+/* Style des articles */
+.post {
+position: relative;
+background-color: #312d2d;
+border: 1px solid #444;
+border-radius: 10px;
+margin: 20px auto; /* Centrer horizontalement */
+padding: 20px;
+max-width: 600px; /* Limite la largeur maximale du conteneur */
+width: 100%; /* Assurez-vous qu'il occupe toute la largeur disponible jusqu'à la limite */
+overflow: hidden;
+z-index: 1;
+}
+
+.post-title {
+position: relative;
+z-index: 1;
+}
+
+.post-image {
+position: relative;
+z-index: 1;
+}
+
+.post-content {
+position: relative;
+z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+.fade-in {
+transition: none;
+}
+}
+.comment-section h3 {
+color: white;
+font-size: 1.5em; 
+margin-bottom: 20px;
+}
+.footer {
+    padding: 20px;
+    background-color: #f1f1f1;
+    text-align: center;
+}
+
+.footer-logo {
+    height: 50px;
+}
+
+.footer-links, .social-links {
+    margin: 20px 0;
+}
+
+.footer-links a, .social-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.footer-links a:hover, .social-links a:hover {
+    color: gray;
+}
+
+.bFoot {
+    margin-top: 10px;
+}
+

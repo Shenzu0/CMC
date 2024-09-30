@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<<meta charset="UTF-8">
+<title>Boutique de Vêtements, Bijoux et Accessoires pour Femmes à Calais - Petites et Grandes Tailles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Découvrez notre boutique de vêtements, bijoux et accessoires pour femmes, située à Calais. Nous proposons une large gamme de tailles, petites et grandes tailles. Visitez-nous à Calais Nord pour trouver la tenue parfaite pour toute occasion.">
+<meta name="keywords" content="boutique vêtements femmes, bijoux femmes, accessoires femmes, grandes tailles, petites tailles, Calais, Calais Nord, mode féminine, shopping Calais">
+<meta name="author" content="CMC Mode">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Boutique de Vêtements, Bijoux et Accessoires pour Femmes à Calais - Petites et Grandes Tailles">
+<meta property="og:description" content="Découvrez notre boutique de vêtements, bijoux et accessoires pour femmes, située à Calais. Nous proposons une large gamme de tailles, petites et grandes tailles. Visitez-nous à Calais Nord pour trouver la tenue parfaite pour toute occasion.">
+<meta property="og:url" content="https://www.votre-site.com">
+<meta property="og:image" content="https://www.votre-site.com/images/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="CMC Mode">
+<meta property="og:see_also" content="https://www.facebook.com/people/CMC-Mode/100083366191144/">
+<meta property="business:contact_data:street_address" content="51 Rue de la Mer">
+<meta property="business:contact_data:locality" content="Calais">
+<meta property="business:contact_data:region" content="Hauts-de-France">
+<meta property="business:contact_data:postal_code" content="62100">
+<meta property="business:contact_data:country_name" content="France">
+    <link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="./css/faq.css">
+</head>
+
+<body>
+    <div class="unique-navbar transparent" id="unique-navbar">
+        <a href="index.html"><img src="images/28a8288e-5e38-4119-805b-f6eb28d25c1b.webp" alt="CMC MODE" class="unique-navbar-logo" id="navbar-logo"></a>
+        <div class="burger-menu" id="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="close-menu-icon" id="close-menu-icon">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="unique-navbar-content" id="unique-navbar-content">
+            <a href="index.html" class="nav-link">ACCUEIL</a>
+            <a href="shop.html" class="nav-link">PRODUITS</a>
+            <a href="about.html" class="nav-link">À PROPOS</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+            <a href="faq.html" class="nav-link">FAQ</a>
+            <a href="blog.html" class="nav-link">BLOG</a>
+            <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <div class="faq-header">
+                <h1>Questions Fréquentes</h1>
+                <p>Trouvez les réponses aux questions les plus courantes ci-dessous.</p>
+            </div>
+
+            <div class="admin-buttons hidden">
+                <button onclick="openModal()">Ajouter une question</button>
+            </div>
+
+            <div class="faq-section">
+                <ul class="faq-list" id="general-section">
+                    <li class="faq-item" data-id="1">
+                        <h4>Quels sont vos horaires d'ouverture ?</h4>
+                        <p>Notre boutique est ouverte du lundi au samedi de 10h à 19h. Nous sommes fermés le dimanche et les jours fériés.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                    <li class="faq-item" data-id="2">
+                        <h4>Où est située votre boutique ?</h4>
+                        <p>Nous sommes situés au 51 Rue de la Mer, 62100 Calais. Vous pouvez trouver une carte interactive sur notre page "À Propos" pour plus de détails.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                    <li class="faq-item" data-id="3">
+                        <h4>Proposez-vous des cartes cadeaux ?</h4>
+                        <p>Oui, nous proposons des cartes cadeaux disponibles en boutique. Elles sont disponibles en différentes valeurs et peuvent être utilisées sur tous nos articles.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="faq-section">
+                <ul class="faq-list" id="products-section">
+                    <li class="faq-item" data-id="4">
+                        <h4>Proposez-vous des vêtements pour toutes les saisons ?</h4>
+                        <p>Nous proposons uniquement des vêtements de saisons.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                    <li class="faq-item" data-id="5">
+                        <h4>Quels types de tissus utilisez-vous pour vos vêtements ?</h4>
+                        <p>Nous sélectionnons avec soin nos tissus pour garantir qualité et confort. Nos collections comprennent des tissus en coton biologique, en lin, en laine mérinos, et en soie. Chaque produit est accompagné d'une description détaillée de ses matériaux.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                    <li class="faq-item" data-id="6">
+                        <h4>Renouvelez-vous fréquemment vos collections ?</h4>
+                        <p>Oui, nous renouvelons régulièrement nos collections pour suivre les dernières tendances de la mode. Nous recevons de nouveaux articles chaque saison, ce qui vous permet de trouver des pièces fraîches et à la mode tout au long de l'année.</p>
+                        <div class="faq-buttons">
+                            <button class="admin-buttons hidden" onclick="editFAQ(this)">Modifier</button>
+                            <button class="delete-button admin-buttons hidden" onclick="deleteFAQ(this)">Supprimer</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="faqModal" class="modal">
+                <div id="faqModalContent" class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 id="modalTitle">Ajouter une question</h2>
+                    <input type="hidden" id="faqId">
+                    <label for="question">Question</label>
+                    <input type="text" id="question" placeholder="Entrez la question">
+                    <label for="answer">Réponse</label>
+                    <textarea id="answer" placeholder="Entrez la réponse"></textarea>
+                    <button onclick="saveFAQ()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-wrapper">
+            <a href="index.html"><img src="images/28a8288e-5e38-4119-805b-f6eb28d25c1b.webp" alt="CMC MODE" class="footer-logo"></a>
+            <div class="footer-links">
+                <a href="./politiqueDonnées.html">Politique de données</a>
+            </div>
+            <div class="social-links">
+                <a href="#"><img src="images/facebook-icon.svg" alt="Facebook"></a>
+            </div>
+        </div>
+        <p class="bFoot">&copy; 2024 CMC MODE. Tous droits réservés.</p>
+    </footer>
+
+    
+</body>
+
+</html>
