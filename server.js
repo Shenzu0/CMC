@@ -18,11 +18,12 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuration de la session
+// Configuration de la session avec une durée de vie de 24 heures
 app.use(session({
     secret: 'secret-key', // Remplace par une clé secrète plus sécurisée en production
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 heures de durée pour le cookie de session
 }));
 
 // Connexion à la base de données MySQL
@@ -55,6 +56,15 @@ const upload = multer({ storage: storage });
 
 // Servir le dossier public pour les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware pour vérifier si l'utilisateur est un admin
+function checkAdminSession(req, res, next) {
+    if (req.session.isAdmin) {
+        return next();
+    } else {
+        return res.status(401).send('Non autorisé');
+    }
+}
 
 // Route principale pour l'accueil
 app.get('/', (req, res) => {
@@ -142,6 +152,15 @@ app.post('/upload-vetement-image', upload.single('image'), (req, res) => {
         console.log('Image de vêtement mise à jour avec succès');
         res.json({ success: true, filePath: imageUrl });
     });
+});
+
+// Route pour vérifier si l'utilisateur est toujours connecté
+app.get('/check-session', (req, res) => {
+    if (req.session.isAdmin) {
+        res.json({ isAdmin: true });
+    } else {
+        res.json({ isAdmin: false });
+    }
 });
 
 // Lancement du serveur
