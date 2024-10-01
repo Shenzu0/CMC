@@ -368,6 +368,25 @@ app.put('/api/page-info/about', (req, res) => {
 });
 
 
+// Route pour enregistrer un message de contact
+app.post('/api/contact', (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Tous les champs sont obligatoires.' });
+  }
+
+  const sql = 'INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)';
+  db.query(sql, [name, email, message], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de l\'enregistrement du message:', err);
+          return res.status(500).json({ error: 'Erreur lors de l\'enregistrement du message.' });
+      }
+
+      res.json({ success: true, message: 'Message enregistré avec succès.' });
+  });
+});
+
 
 // Lancement du serveur
 app.listen(PORT, () => {
