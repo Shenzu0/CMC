@@ -339,6 +339,34 @@ app.delete('/api/produits-index/:id', (req, res) => {
   });
 });
 
+// Route pour obtenir la description de la page "About"
+app.get('/api/page-info/about', (req, res) => {
+  const sql = 'SELECT * FROM page_info WHERE page_type = "about"';
+  db.query(sql, (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la récupération de la description:', err);
+          return res.status(500).json({ error: 'Erreur lors de la récupération de la description' });
+      }
+      if (result.length === 0) {
+          return res.status(404).json({ error: 'Description non trouvée' });
+      }
+      res.json(result[0]);
+  });
+});
+
+// Route pour mettre à jour la description de la page "About"
+app.put('/api/page-info/about', (req, res) => {
+  const { description } = req.body;
+  const sql = 'UPDATE page_info SET description = ? WHERE page_type = "about"';
+  db.query(sql, [description], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la mise à jour de la description:', err);
+          return res.status(500).json({ error: 'Erreur lors de la mise à jour de la description' });
+      }
+      res.json({ success: true });
+  });
+});
+
 
 
 // Lancement du serveur

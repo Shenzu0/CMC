@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=General+Sans:wght@400;700&display=swap');
 
+
+
 body {
     font-family: 'General Sans', sans-serif;
     margin: 0;
@@ -45,6 +47,7 @@ body {
     display: flex;
     overflow: hidden;
     align-items: center;
+    
 }
 
 .cta-localisation_component {
@@ -56,8 +59,13 @@ body {
 }
 
 .cta_content-left {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Assurez-vous que les éléments sont alignés au début */
+    row-gap: 20px; /* Ajoute un espace de 20px entre chaque élément vertical */
+    padding: 10px; /* Ajoute un peu de padding autour pour un meilleur espacement général */
 }
+
 
 .cta_content-right {
     flex: 1;
@@ -129,12 +137,9 @@ body.admin .edit-button {
     display: none;
 }
 
-.content {
-    margin-top: 90px;
-    padding: 0;
-    height: 10;
+.content{
+    height: auto;
 }
-
 .cta-container {
     margin-bottom: 0;
 }
