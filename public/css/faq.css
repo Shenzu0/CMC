@@ -9,13 +9,14 @@ body {
 .content {
     margin-top: 100px;
     padding: 20px;
-    height: 900px;
+    height: auto;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 70px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

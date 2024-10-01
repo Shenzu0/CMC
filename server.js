@@ -367,6 +367,64 @@ app.put('/api/page-info/about', (req, res) => {
   });
 });
 
+/// Routes pour les FAQs
+// Récupérer toutes les FAQs
+app.get('/api/faqs', (req, res) => {
+  const sql = 'SELECT * FROM faqs'; // Utilisation de la table 'faqs'
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error('Erreur lors de la récupération des FAQs:', err);
+          return res.status(500).json({ error: 'Erreur lors de la récupération des FAQs' });
+      }
+      res.json(results);
+  });
+});
+
+// Ajouter une nouvelle FAQ
+app.post('/api/faqs', checkAdminSession, (req, res) => {
+  const { question, reponse } = req.body;  // 'reponse' doit correspondre à la colonne dans votre table MySQL
+  if (!question || !reponse) {
+      return res.status(400).json({ error: 'Question et réponse sont obligatoires.' });
+  }
+  
+  const sql = 'INSERT INTO faqs (question, reponse) VALUES (?, ?)';
+  db.query(sql, [question, reponse], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de l\'ajout de la FAQ:', err);
+          return res.status(500).json({ error: 'Erreur lors de l\'ajout de la FAQ' });
+      }
+      res.json({ success: true });
+  });
+});
+
+
+// Modifier une FAQ existante
+app.put('/api/faqs/:id', checkAdminSession, (req, res) => {
+  const id = req.params.id;
+  const { question, answer } = req.body;
+  const sql = 'UPDATE faqs SET question = ?, reponse = ? WHERE id = ?'; // Utilisation de la table 'faqs' et la colonne 'reponse'
+  db.query(sql, [question, answer, id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la mise à jour de la FAQ:', err);
+          return res.status(500).json({ error: 'Erreur lors de la mise à jour de la FAQ' });
+      }
+      res.json({ success: true });
+  });
+});
+
+// Supprimer une FAQ
+app.delete('/api/faqs/:id', checkAdminSession, (req, res) => {
+  const id = req.params.id;
+  const sql = 'DELETE FROM faqs WHERE id = ?'; // Utilisation de la table 'faqs'
+  db.query(sql, [id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la suppression de la FAQ:', err);
+          return res.status(500).json({ error: 'Erreur lors de la suppression de la FAQ' });
+      }
+      res.json({ success: true });
+  });
+});
+
 
 // Route pour enregistrer un message de contact
 app.post('/api/contact', (req, res) => {
