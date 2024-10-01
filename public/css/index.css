@@ -570,3 +570,16 @@ display: inline-block; /* Afficher en mode admin */
 margin-bottom: 5%;
 margin-top: 2%;
 }
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}

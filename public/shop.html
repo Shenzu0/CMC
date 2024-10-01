@@ -22,6 +22,7 @@
     <meta property="business:contact_data:postal_code" content="62100">
     <meta property="business:contact_data:country_name" content="France">
     <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" href="./css/shop.css">
 </head>
 <body>
     <div class="unique-navbar transparent" id="unique-navbar">
@@ -48,9 +49,11 @@
     <div class="products-grid" id="products-grid">
         <!-- Les cartes des produits seront générées ici -->
     </div>
-    <div class="admin-buttons edit-button" id="admin-buttons" style="justify-content: center;">
+    <div class="admin-buttons edit-button" id="admin-buttons" style="display:none; justify-content: center;">
         <button onclick="openModal()">Ajouter un produit</button>
     </div>
+    
+    <!-- Modal pour ajouter/modifier un produit -->
     <div id="productModal" class="modal">
         <div id="productModalContent" class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -65,6 +68,7 @@
             <button onclick="saveProduct()">Enregistrer</button>
         </div>
     </div>
+
     <footer class="footer">
         <div class="footer-wrapper">
             <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="footer-logo"></a>
@@ -78,5 +82,181 @@
         <p class="bFoot">&copy; 2024 CMC MODE. Tous droits réservés.</p>
     </footer>
 
+    <!-- Script à la fin pour s'assurer que le DOM est chargé -->
+    <script>
+        let isAdmin = false;
+        async function fetchProducts() {
+    try {
+        const response = await fetch('/api/vetements'); // Utilise '/api/vetements' pour GET
+        if (!response.ok) {
+            throw new Error('Failed to fetch products');
+        }
+        const products = await response.json();
+        const productsGrid = document.getElementById('products-grid');
+        productsGrid.innerHTML = '';
+        products.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.id = `product-${product.id}`;
+            productCard.innerHTML = `
+                <a href="product-detail.html?id=${product.id}">
+                    <img src="${product.image_url}" alt="${product.titre}" class="product-image">
+                </a>
+                <div class="product-info">
+                    <div class="product-title">${product.titre}</div>
+                    <div class="product-description">${product.description}</div>
+                </div>
+                ${isAdmin ? `
+                <div class="admin-buttons edit-button">
+                    <button class="edit-button" onclick="editProduct(${product.id})">Modifier</button>
+                    <button class="delete-button" onclick="deleteProduct(${product.id})">Supprimer</button>
+                </div>` : ''}
+            `;
+            productsGrid.appendChild(productCard);
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des produits:', error);
+    }
+}
+
+window.saveProduct = async function() {
+    const productId = document.getElementById('productId').value;
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const imageFile = document.getElementById('imageFile').files[0];
+
+    const formData = new FormData();
+    formData.append('titre', title); // Correspond à la base de données
+    formData.append('description', description);
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    try {
+        const method = productId ? 'PUT' : 'POST';
+        const url = productId ? `/api/vetements/${productId}` : '/api/vetements';
+
+        const response = await fetch(url, {
+            method: method,
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save product');
+        }
+
+        closeModal();
+        fetchProducts(); // Recharger la liste des produits
+    } catch (error) {
+        console.error('Error saving product:', error);
+    }
+};
+
+        window.openModal = function(product = null) {
+            const modal = document.getElementById('productModal');
+            const modalTitle = document.getElementById('modalTitle');
+            modal.style.display = 'block';
+
+            if (product) {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('title').value = product.titre;
+                document.getElementById('description').value = product.description;
+                modalTitle.textContent = 'Modifier le produit';
+            } else {
+                modalTitle.textContent = 'Ajouter un produit';
+                document.getElementById('productId').value = '';
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+            }
+        };
+
+        window.closeModal = function() {
+            const modal = document.getElementById('productModal');
+            modal.style.display = 'none';
+        };
+
+// Fonction pour enregistrer un produit (ajout ou modification)
+window.saveProduct = async function () {
+    const productId = document.getElementById('productId').value;
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const imageFile = document.getElementById('imageFile').files[0];
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', 'index'); // ou autre catégorie selon ta logique
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    try {
+        const method = productId ? 'PUT' : 'POST';
+        // Utilisez '/api/produits-index' comme URL au lieu de '/api/products'
+        const url = productId ? `/api/produits-index/${productId}` : '/api/produits-index';
+
+        const response = await fetch(url, {
+            method: method,
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la sauvegarde du produit');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Produit enregistré avec succès');
+            closeModal();
+            loadIndexProducts(); // Recharge les produits après ajout/modification
+        } else {
+            alert('Erreur lors de l\'enregistrement du produit');
+        }
+
+    } catch (error) {
+        console.error('Erreur lors de la sauvegarde du produit:', error);
+        alert('Erreur lors de la sauvegarde du produit');
+    }
+};
+
+
+window.deleteProduct = async function(id) {
+    try {
+        const response = await fetch(`/api/vetements/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete product');
+        }
+        fetchProducts(); // Recharger les produits après suppression
+    } catch (error) {
+        console.error('Erreur lors de la suppression du produit:', error);
+    }
+};
+
+
+        async function checkAdmin() {
+            try {
+                const response = await fetch('/check-session');
+                const data = await response.json();
+                isAdmin = data.isAdmin;
+                if (isAdmin) {
+                    document.getElementById('admin-buttons').style.display = 'flex';
+                }
+                fetchProducts();
+            } catch (error) {
+                console.error('Failed to check admin session', error);
+            }
+        }
+
+        window.onload = checkAdmin;
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('productModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
 </body>
 </html>

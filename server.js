@@ -127,14 +127,42 @@ app.get('/api/vetements', (req, res) => {
 
 // Route pour modifier l'image de fond (background)
 app.post('/upload-background-image', upload.single('image'), (req, res) => {
-    const section = req.body.section;
-    const imageUrl = `/uploads/${req.file.filename}`;
+  const section = req.body.section;
+  const imageUrl = `/uploads/${req.file.filename}`;
 
-    console.log(`Image de fond uploadée pour la section: ${section}, chemin de l'image: ${imageUrl}`);
+  console.log(`Image de fond uploadée pour la section: ${section}, chemin de l'image: ${imageUrl}`);
 
-    // Ici, on pourrait sauvegarder l'URL de l'image dans la base de données ou un fichier de configuration
-    res.json({ success: true, filePath: imageUrl });
+  // Sauvegarder l'URL de l'image dans la base de données
+  const sql = 'REPLACE INTO background_images (section_id, image_url) VALUES (?, ?)';
+  db.query(sql, [section, imageUrl], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la mise à jour de l\'image de fond:', err);
+          return res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'image de fond' });
+      }
+      console.log('Image de fond mise à jour avec succès');
+      res.json({ success: true, filePath: imageUrl });
+  });
 });
+
+// Route pour obtenir les images de fond depuis MySQL
+app.get('/get-background-images', (req, res) => {
+  const sql = 'SELECT section_id, image_url FROM background_images';
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error('Erreur lors de la récupération des images de fond:', err);
+          return res.status(500).json({ error: 'Erreur lors de la récupération des images de fond' });
+      }
+
+      // Convertir les résultats en un objet { section_id: image_url }
+      const images = {};
+      results.forEach(row => {
+          images[row.section_id] = row.image_url;
+      });
+
+      res.json(images);
+  });
+});
+
 
 // Route pour modifier l'image d'un vêtement
 app.post('/upload-vetement-image', upload.single('image'), (req, res) => {
@@ -162,6 +190,156 @@ app.get('/check-session', (req, res) => {
         res.json({ isAdmin: false });
     }
 });
+
+app.get('/get-background-images', (req, res) => {
+  const images = {
+      hero: '/path/to/hero.jpg',
+      about: '/path/to/about.jpg',
+      blog: '/path/to/blog.jpg'
+  };
+  res.json(images);
+});
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+// Route pour ajouter un vêtement
+app.post('/api/vetements', upload.single('image'), (req, res) => {
+  const { titre, description } = req.body; // Utilise 'titre' et 'description' (conforme à la base de données)
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+  const sql = 'INSERT INTO vêtements (titre, description, image_url) VALUES (?, ?, ?)';
+  db.query(sql, [titre, description, imageUrl], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de l\'ajout du vêtement:', err);
+          return res.status(500).json({ error: 'Erreur lors de l\'ajout du vêtement' });
+      }
+      console.log('Vêtement ajouté avec succès:', result);
+      res.json({ success: true });
+  });
+});
+
+// Route pour modifier un vêtement
+app.put('/api/vetements/:id', upload.single('image'), (req, res) => {
+  const id = req.params.id;
+  const { titre, description } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+  const sql = 'UPDATE vêtements SET titre = ?, description = ?, image_url = ? WHERE id = ?';
+  db.query(sql, [titre, description, imageUrl, id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la modification du vêtement:', err);
+          return res.status(500).json({ error: 'Erreur lors de la modification du vêtement' });
+      }
+      console.log('Vêtement modifié avec succès:', result);
+      res.json({ success: true });
+  });
+});
+
+// Route pour supprimer un vêtement
+app.delete('/api/vetements/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const sql = 'DELETE FROM vêtements WHERE id = ?';
+  db.query(sql, [productId], (err, result) => {
+      if (err) {
+          console.error(`Erreur SQL lors de la suppression du produit avec l'ID ${productId}:`, err);
+          return res.status(500).json({ error: 'Erreur lors de la suppression du produit' });
+      }
+
+      if (result.affectedRows === 0) {
+          console.warn(`Produit avec l'ID ${productId} non trouvé.`);
+          return res.status(404).json({ error: 'Produit non trouvé' });
+      }
+
+      console.log(`Produit avec l'ID ${productId} supprimé avec succès`);
+      res.json({ success: true, message: 'Produit supprimé avec succès' });
+  });
+});
+
+// Route pour récupérer un vêtement par son ID
+app.get('/api/vetements/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const sql = 'SELECT * FROM vêtements WHERE id = ?';
+  db.query(sql, [productId], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la récupération du produit:', err);
+          return res.status(500).json({ error: 'Erreur lors de la récupération du produit' });
+      }
+
+      if (result.length === 0) {
+          return res.status(404).json({ error: 'Produit non trouvé' });
+      }
+
+      console.log('Produit récupéré:', result[0]);
+      res.json(result[0]);
+  });
+});
+
+// Route pour récupérer les produits de l'accueil (index)
+app.get('/api/produits-index', (req, res) => {
+  const sql = 'SELECT * FROM produits_index';
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error('Erreur lors de la récupération des produits de l\'index:', err);
+          return res.status(500).json({ error: 'Erreur lors de la récupération des produits de l\'index' });
+      }
+      res.json(results);
+  });
+});
+
+// Route pour ajouter un produit à l'accueil
+app.post('/api/produits-index', upload.single('image'), (req, res) => {
+  const { titre, description } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+  const sql = 'INSERT INTO produits_index (titre, description, image_url) VALUES (?, ?, ?)';
+  db.query(sql, [titre, description, imageUrl], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de l\'ajout du produit à l\'index:', err);
+          return res.status(500).json({ error: 'Erreur lors de l\'ajout du produit à l\'index' });
+      }
+      res.json({ success: true });
+  });
+});
+
+
+// Route pour modifier un produit de l'accueil
+app.put('/api/produits-index/:id', upload.single('image'), (req, res) => {
+  const id = req.params.id;
+  const { titre, description } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+  const sql = 'UPDATE produits_index SET titre = ?, description = ?, image_url = ? WHERE id = ?';
+  db.query(sql, [titre, description, imageUrl, id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la modification du produit à l\'index:', err);
+          return res.status(500).json({ error: 'Erreur lors de la modification du produit à l\'index' });
+      }
+      res.json({ success: true });
+  });
+});
+
+// Route pour supprimer un produit de l'accueil
+app.delete('/api/produits-index/:id', (req, res) => {
+  const id = req.params.id;
+
+  const sql = 'DELETE FROM produits_index WHERE id = ?';
+  db.query(sql, [id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la suppression du produit à l\'index:', err);
+          return res.status(500).json({ error: 'Erreur lors de la suppression du produit à l\'index' });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Produit non trouvé' });
+      }
+
+      res.json({ success: true, message: 'Produit supprimé avec succès' });
+  });
+});
+
+
 
 // Lancement du serveur
 app.listen(PORT, () => {

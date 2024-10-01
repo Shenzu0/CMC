@@ -50,12 +50,14 @@
             <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
         </nav>
     </header>
+
     <section class="hero hero background-cover">
         <h1>Découvrez Nos Nouvelles Collections</h1>
         <a href="shop.html" class="button heroButton">Voir les Nouveautés</a>
         <button class="edit-button" onclick="editBackgroundImage('hero')">Modifier Image de Fond</button>
         <input type="file" id="upload-hero-bg" class="upload-input" style="display: none;" accept="image/*" onchange="uploadBackgroundImage(event, 'hero')">
     </section>
+
     <section class="section">
         <h2>Nos Produits</h2>
         <p class="produits">Découvrez notre gamme de produits uniques et de haute qualité. Cliquez ci-dessous pour voir notre collection complète.</p>
@@ -67,6 +69,7 @@
             <a href="shop.html" class="button">Voir plus</a>
         </div>
     </section>
+
     <section class="separator"></section>
     <section class="section section-about hero background-cover">
         <h2>À Propos de CMC MODE</h2>
@@ -77,6 +80,7 @@
             <a href="about.html" class="button">En savoir plus</a>
         </div>
     </section>
+
     <section class="separator"></section>
     <section class="section section-blog hero background-cover">
         <h2>Blog</h2>
@@ -87,6 +91,7 @@
             <a href="blog.html" class="button">Accéder au Blog</a>
         </div>
     </section>
+
     <footer class="footer">
         <div class="footer-wrapper">
             <a href="index.html"><img src="mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="footer-logo"></a>
@@ -115,216 +120,259 @@
         </div>
     </div>
     <script>
- document.addEventListener('DOMContentLoaded', function () {
-    // Charger les vêtements depuis MySQL
-    fetch('/api/vetements')
-        .then(response => response.json())
-        .then(vetements => {
-            const productsSection = document.getElementById('products-section');
-            vetements.forEach(vetement => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <img src="${vetement.image_url}" alt="${vetement.titre}" class="product-image" id="product-${vetement.id}">
-                    <div class="product-info">
-                        <div class="product-title">${vetement.titre}</div>
-                        <div class="product-description">${vetement.description}</div>
-                    </div>
-                    <button class="edit-button" onclick="editProductImage('${vetement.id}')">Modifier l'image</button>
-                    <input type="file" id="upload-product-${vetement.id}" class="upload-input" style="display: none;" accept="image/*" onchange="uploadImage(event, 'product-${vetement.id}')">
-                `;
-                productsSection.appendChild(productCard);
-            });
-        })
-        .catch(error => console.error('Erreur lors du chargement des vêtements:', error));
-
-    // Charger les images de fond au chargement de la page
-    fetch('/get-background-images')
-        .then(response => response.json())
-        .then(data => {
-            if (data.hero) {
-                document.querySelector('.hero').style.backgroundImage = `url(${data.hero})`;
+        document.addEventListener('DOMContentLoaded', function () {
+            // Vérification de la session de l'admin avant de charger les produits
+            fetch('/check-session')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isAdmin) {
+                        document.body.classList.add('admin');
+                    } else {
+                        document.body.classList.remove('admin');
+                    }
+                    // Une fois la session vérifiée, charger les produits de l'accueil
+                    loadIndexProducts(); // Appelle la fonction pour charger les produits de l'accueil
+                })
+                .catch(error => console.error('Erreur lors de la vérification de la session:', error));
+        
+            // Fonction pour charger les produits de l'accueil depuis MySQL
+            function loadIndexProducts() {
+                fetch('/api/produits-index') // Utilisation de l'API spécifique pour les produits de l'accueil
+                    .then(response => response.json())
+                    .then(produits => {
+                        const productsSection = document.getElementById('products-section');
+                        productsSection.innerHTML = ''; // Vider la section avant de la remplir
+                        produits.forEach(produit => {
+                            const productCard = document.createElement('div');
+                            productCard.className = 'product-card';
+                            productCard.innerHTML = `
+                                <img src="${produit.image_url}" alt="${produit.titre}" class="product-image" id="product-${produit.id}">
+                                <div class="product-info">
+                                    <div class="product-title">${produit.titre}</div>
+                                    <div class="product-description">${produit.description}</div>
+                                </div>
+                                <button class="edit-button" onclick="editProductImage('${produit.id}')">Modifier l'image</button>
+                                <input type="file" id="upload-product-${produit.id}" class="upload-input" style="display: none;" accept="image/*" onchange="uploadImage(event, 'product-${produit.id}')">
+                                ${document.body.classList.contains('admin') ? `<button class="delete-button" onclick="deleteProduct(${produit.id})">Supprimer</button>` : ''}
+                            `;
+                            productsSection.appendChild(productCard);
+                        });
+                    })
+                    .catch(error => console.error('Erreur lors du chargement des produits de l\'index:', error));
             }
-            if (data.about) {
-                document.querySelector('.section-about').style.backgroundImage = `url(${data.about})`;
-            }
-            if (data.blog) {
-                document.querySelector('.section-blog').style.backgroundImage = `url(${data.blog})`;
-            }
-        })
-        .catch(error => console.error('Erreur lors du chargement des images de fond:', error));
+        
+ // Fonction pour supprimer un produit de l'accueil
+window.deleteProduct = async function (id) {
+    try {
+        const response = await fetch(`/api/produits-index/${id}`, { method: 'DELETE' }); // Supprimer de l'API produits-index
 
-    // Fonction pour éditer l'image d'un vêtement
-    function editProductImage(id) {
-        const fileInput = document.getElementById(`upload-product-${id}`);
-        fileInput.click();
-    }
-
-    // Fonction pour uploader une nouvelle image pour un vêtement
-    function uploadImage(event, productId) {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('id', productId.replace('product-', ''));
-
-        fetch('/upload-vetement-image', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById(productId).src = data.filePath;
-            } else {
-                alert('Échec du téléchargement de l\'image');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    // Fonction pour éditer les images de fond
-    function editBackgroundImage(section) {
-        const fileInput = document.getElementById(`upload-${section}-bg`);
-        fileInput.click();
-    }
-
-    // Fonction pour gérer l'upload des images de fond
-    function uploadBackgroundImage(event, sectionId) {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('section', sectionId);
-
-        fetch('/upload-background-image', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const section = document.querySelector(`.${sectionId}`);
-                section.style.backgroundImage = `url(${data.filePath})`;
-            } else {
-                alert('Échec du téléchargement de l\'image');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    // Vérification de la session de l'admin
-    fetch('/check-session')
-        .then(response => response.json())
-        .then(data => {
-            if (data.isAdmin) {
-                document.body.classList.add('admin');
-            } else {
-                document.body.classList.remove('admin');
-            }
-        })
-        .catch(error => console.error('Error checking session:', error));
-
-    // Animation de la navbar lors du défilement
-    window.addEventListener('scroll', function() {
-        const navbar = document.getElementById('unique-navbar');
-        const navbarContent = document.getElementById('unique-navbar-content');
-        if (!navbarContent.classList.contains('active')) {
-            if (window.scrollY > 50) {
-                navbar.classList.remove('transparent');
-                navbar.classList.add('solid');
-            } else {
-                navbar.classList.remove('solid');
-                navbar.classList.add('transparent');
-            }
-        }
-    });
-
-    // Gestion du menu burger
-    const burgerMenu = document.getElementById('burger-menu');
-    const closeMenuIcon = document.getElementById('close-menu-icon');
-    const navbarContent = document.getElementById('unique-navbar-content');
-
-    function toggleMenu() {
-        const isActive = navbarContent.classList.contains('active');
-        navbarContent.classList.toggle('active', !isActive);
-        burgerMenu.classList.toggle('active', !isActive);
-        closeMenuIcon.classList.toggle('active', !isActive);
-    }
-
-    burgerMenu.addEventListener('click', toggleMenu);
-    closeMenuIcon.addEventListener('click', toggleMenu);
-
-    // Réinitialiser l'état du menu burger lors du redimensionnement
-    window.addEventListener('resize', function () {
-        if (window.innerWidth > 1050) {
-            navbarContent.classList.remove('active');
-            burgerMenu.classList.remove('active');
-            closeMenuIcon.classList.remove('active');
-        }
-    });
-
-    // Fonction pour ouvrir le modal d'ajout de produit
-    function openModal(product = null) {
-        const modal = document.getElementById('productModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const isEditMode = !!product;
-        modal.style.display = 'block';
-        if (isEditMode) {
-            document.getElementById('productId').value = product.id;
-            document.getElementById('title').value = product.titre;
-            document.getElementById('description').value = product.description;
-            document.getElementById('imageFile').value = '';
-            modalTitle.textContent = 'Modifier le produit';
+        if (response.ok) {
+        
+            loadIndexProducts(); // Recharge la liste des produits de l'accueil
         } else {
-            modalTitle.textContent = 'Ajouter un produit';
-            document.getElementById('productId').value = '';
-            document.getElementById('title').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('imageFile').value = '';
+            alert('Erreur lors de la suppression du produit');
+            console.error('Erreur lors de la suppression:', response.statusText);
         }
+    } catch (error) {
+        console.error('Erreur lors de la suppression du produit:', error);
+    }
+};
+
+        
+            // Fonction pour modifier l'image d'un produit
+            window.editProductImage = function (id) {
+                const fileInput = document.getElementById(`upload-product-${id}`);
+                fileInput.click();
+            }
+        
+            window.uploadImage = function (event, productId) {
+                const file = event.target.files[0];
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('id', productId.replace('product-', ''));
+        
+                fetch('/upload-vetement-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(productId).src = data.filePath;
+                    } else {
+                        alert('Échec du téléchargement de l\'image');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        
+            // Fonction pour ouvrir le modal pour ajouter ou modifier un produit
+            window.openModal = function (product = null) {
+                const modal = document.getElementById('productModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const isEditMode = !!product;
+                modal.style.display = 'block';
+                if (isEditMode) {
+                    document.getElementById('productId').value = product.id;
+                    document.getElementById('title').value = product.titre;
+                    document.getElementById('description').value = product.description;
+                    document.getElementById('imageFile').value = '';
+                    modalTitle.textContent = 'Modifier le produit';
+                } else {
+                    modalTitle.textContent = 'Ajouter un produit';
+                    document.getElementById('productId').value = '';
+                    document.getElementById('title').value = '';
+                    document.getElementById('description').value = '';
+                    document.getElementById('imageFile').value = '';
+                }
+            }
+        
+            // Fonction pour fermer le modal
+            window.closeModal = function () {
+                const modal = document.getElementById('productModal');
+                modal.style.display = 'none';
+            }
+        
+// Fonction pour enregistrer un produit (ajout ou modification)
+window.saveProduct = async function () {
+    const productId = document.getElementById('productId').value;
+    const title = document.getElementById('title').value.trim(); // Nom du champ en front-end
+    const description = document.getElementById('description').value.trim();
+    const imageFile = document.getElementById('imageFile').files[0];
+
+    const formData = new FormData();
+    formData.append('titre', title); // Utiliser "titre" ici pour correspondre au back-end
+    formData.append('description', description);
+    if (imageFile) {
+        formData.append('image', imageFile);
     }
 
-    // Fonction pour fermer le modal
-    function closeModal() {
-        const modal = document.getElementById('productModal');
-        modal.style.display = 'none';
-    }
-
-    // Fonction pour sauvegarder un produit
-    async function saveProduct() {
-        const productId = document.getElementById('productId').value;
-        const title = document.getElementById('title').value;
-        const description = document.getElementById('description').value;
-        const imageFile = document.getElementById('imageFile').files[0];
-
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('category', 'index'); // ou autre catégorie selon ta logique
-        if (imageFile) {
-            formData.append('image', imageFile);
-        }
-
+    try {
         const method = productId ? 'PUT' : 'POST';
-        const url = productId ? `/api/products/${productId}` : '/api/products';
+        const url = productId ? `/api/produits-index/${productId}` : '/api/produits-index';
 
-        await fetch(url, {
+        const response = await fetch(url, {
             method: method,
             body: formData
-        })
-        .catch(error => console.error('Erreur lors de la sauvegarde du produit:', error));
+        });
 
-        closeModal();
-        window.location.reload(); // Recharge la page pour afficher les modifications
-    }
+        if (!response.ok) {
+            throw new Error('Erreur lors de la sauvegarde du produit');
+        }
 
-    // Fonction pour supprimer un produit
-    async function deleteProduct(id) {
-        await fetch(`/api/products/${id}`, { method: 'DELETE' });
-        window.location.reload(); // Recharge la page pour afficher les modifications
+        const result = await response.json();
+        if (result.success) {
+            closeModal();
+            loadIndexProducts(); // Recharge les produits après ajout/modification
+        } else {
+            alert('Erreur lors de l\'enregistrement du produit');
+        }
+
+    } catch (error) {
+        console.error('Erreur lors de la sauvegarde du produit:', error);
+        alert('Erreur lors de la sauvegarde du produit');
     }
-});
-           // Animation on scroll
-           const sections = document.querySelectorAll('.section');
+};
+
+   
+            // Fonction pour charger les images de fond au chargement de la page
+            fetch('/get-background-images')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.hero) {
+                        document.querySelector('.hero').style.backgroundImage = `url(${data.hero})`;
+                    }
+                    if (data.about) {
+                        document.querySelector('.section-about').style.backgroundImage = `url(${data.about})`;
+                    }
+                    if (data.blog) {
+                        document.querySelector('.section-blog').style.backgroundImage = `url(${data.blog})`;
+                    }
+                })
+                .catch(error => console.error('Erreur lors du chargement des images de fond:', error));
+        
+            // Fonction pour modifier l'image de fond
+            window.editBackgroundImage = function (section) {
+                const fileInput = document.getElementById(`upload-${section}-bg`);
+                fileInput.click();
+            }
+        
+            window.uploadBackgroundImage = function (event, sectionId) {
+                const file = event.target.files[0];
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('section', sectionId);
+        
+                fetch('/upload-background-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let sectionClass;
+                        if (sectionId === 'hero') {
+                            sectionClass = 'hero';
+                        } else if (sectionId === 'about') {
+                            sectionClass = 'section-about';
+                        } else if (sectionId === 'blog') {
+                            sectionClass = 'section-blog';
+                        }
+        
+                        const section = document.querySelector(`.${sectionClass}`);
+                        if (section) {
+                            section.style.backgroundImage = `url(${data.filePath})`;
+                        } else {
+                            console.error(`Erreur : la section avec l'ID ${sectionId} n'existe pas.`);
+                        }
+                    } else {
+                        alert('Échec du téléchargement de l\'image');
+                    }
+                })
+                .catch(error => console.error('Erreur lors de l\'upload de l\'image:', error));
+            };
+        
+            // Animation de la navbar lors du défilement
+            window.addEventListener('scroll', function() {
+                const navbar = document.getElementById('unique-navbar');
+                const navbarContent = document.getElementById('unique-navbar-content');
+                if (!navbarContent.classList.contains('active')) {
+                    if (window.scrollY > 50) {
+                        navbar.classList.remove('transparent');
+                        navbar.classList.add('solid');
+                    } else {
+                        navbar.classList.remove('solid');
+                        navbar.classList.add('transparent');
+                    }
+                }
+            });
+        
+            // Gestion du menu burger
+            const burgerMenu = document.getElementById('burger-menu');
+            const closeMenuIcon = document.getElementById('close-menu-icon');
+            const navbarContent = document.getElementById('unique-navbar-content');
+        
+            function toggleMenu() {
+                const isActive = navbarContent.classList.contains('active');
+                navbarContent.classList.toggle('active', !isActive);
+                burgerMenu.classList.toggle('active', !isActive);
+                closeMenuIcon.classList.toggle('active', !isActive);
+            }
+        
+            burgerMenu.addEventListener('click', toggleMenu);
+            closeMenuIcon.addEventListener('click', toggleMenu);
+        
+            // Réinitialiser l'état du menu burger lors du redimensionnement
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 1050) {
+                    navbarContent.classList.remove('active');
+                    burgerMenu.classList.remove('active');
+                    closeMenuIcon.classList.remove('active');
+                }
+            });
+        
+            // Animation on scroll
+            const sections = document.querySelectorAll('.section');
             const options = {
                 threshold: 0.2
             };
@@ -336,10 +384,13 @@
                     }
                 });
             }, options);
-
+        
             sections.forEach(section => {
                 observer.observe(section);
             });
-    </script>
+        });
+        </script>
+
 </body>
-</html>
+
+</html>        
