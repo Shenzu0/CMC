@@ -85,78 +85,89 @@
     <!-- Script à la fin pour s'assurer que le DOM est chargé -->
     <script>
         let isAdmin = false;
+    
+        // Fonction pour récupérer les produits et les afficher
         async function fetchProducts() {
-    try {
-        const response = await fetch('/api/vetements'); // Utilise '/api/vetements' pour GET
-        if (!response.ok) {
-            throw new Error('Failed to fetch products');
+            try {
+                const response = await fetch('/api/vetements'); // Utilise '/api/vetements' pour GET
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const products = await response.json();
+                const productsGrid = document.getElementById('products-grid');
+                productsGrid.innerHTML = ''; // Vider la grille avant de charger les produits
+    
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.id = `product-${product.id}`;
+                    productCard.innerHTML = `
+                        <a href="product-detail.html?id=${product.id}">
+                            <img src="${product.image_url}" alt="${product.titre}" class="product-image">
+                        </a>
+                        <div class="product-info">
+                            <div class="product-title">${product.titre}</div>
+                            <div class="product-description">${product.description}</div>
+                        </div>
+                        ${isAdmin ? `
+                        <div class="admin-buttons edit-button">
+                            <button class="edit-button" onclick="editProduct(${product.id})">Modifier</button>
+                            <button class="delete-button" onclick="deleteProduct(${product.id})">Supprimer</button>
+                        </div>` : ''}
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+            } catch (error) {
+                console.error('Erreur lors de la récupération des produits:', error);
+            }
         }
-        const products = await response.json();
-        const productsGrid = document.getElementById('products-grid');
-        productsGrid.innerHTML = '';
-        products.forEach(product => {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.id = `product-${product.id}`;
-            productCard.innerHTML = `
-                <a href="product-detail.html?id=${product.id}">
-                    <img src="${product.image_url}" alt="${product.titre}" class="product-image">
-                </a>
-                <div class="product-info">
-                    <div class="product-title">${product.titre}</div>
-                    <div class="product-description">${product.description}</div>
-                </div>
-                ${isAdmin ? `
-                <div class="admin-buttons edit-button">
-                    <button class="edit-button" onclick="editProduct(${product.id})">Modifier</button>
-                    <button class="delete-button" onclick="deleteProduct(${product.id})">Supprimer</button>
-                </div>` : ''}
-            `;
-            productsGrid.appendChild(productCard);
-        });
-    } catch (error) {
-        console.error('Erreur lors de la récupération des produits:', error);
-    }
-}
-
-window.saveProduct = async function() {
-    const productId = document.getElementById('productId').value;
-    const title = document.getElementById('title').value;
-    const description = document.getElementById('description').value;
-    const imageFile = document.getElementById('imageFile').files[0];
-
-    const formData = new FormData();
-    formData.append('titre', title); // Correspond à la base de données
-    formData.append('description', description);
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-
-    try {
-        const method = productId ? 'PUT' : 'POST';
-        const url = productId ? `/api/vetements/${productId}` : '/api/vetements';
-
-        const response = await fetch(url, {
-            method: method,
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to save product');
-        }
-
-        closeModal();
-        fetchProducts(); // Recharger la liste des produits
-    } catch (error) {
-        console.error('Error saving product:', error);
-    }
-};
-
+    
+        // Fonction pour enregistrer un produit (ajout ou modification)
+        window.saveProduct = async function() {
+            const productId = document.getElementById('productId').value;
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const imageFile = document.getElementById('imageFile').files[0];
+    
+            if (!title || !description) {
+                alert('Le titre et la description ne peuvent pas être vides');
+                return;
+            }
+    
+            const formData = new FormData();
+            formData.append('titre', title); // Correspond à la base de données
+            formData.append('description', description);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+    
+            try {
+                const method = productId ? 'PUT' : 'POST';
+                const url = productId ? `/api/vetements/${productId}` : '/api/vetements';
+    
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to save product');
+                }
+    
+                closeModal();
+                fetchProducts(); // Recharger la liste des produits
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Erreur lors de la sauvegarde du produit');
+            }
+        };
+    
+        // Fonction pour ouvrir le modal (ajouter ou modifier)
         window.openModal = function(product = null) {
             const modal = document.getElementById('productModal');
             const modalTitle = document.getElementById('modalTitle');
             modal.style.display = 'block';
-
+    
             if (product) {
                 document.getElementById('productId').value = product.id;
                 document.getElementById('title').value = product.titre;
@@ -169,72 +180,43 @@ window.saveProduct = async function() {
                 document.getElementById('description').value = '';
             }
         };
-
+    
+        // Fonction pour fermer le modal
         window.closeModal = function() {
             const modal = document.getElementById('productModal');
             modal.style.display = 'none';
         };
-
-// Fonction pour enregistrer un produit (ajout ou modification)
-window.saveProduct = async function () {
-    const productId = document.getElementById('productId').value;
-    const title = document.getElementById('title').value;
-    const description = document.getElementById('description').value;
-    const imageFile = document.getElementById('imageFile').files[0];
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('category', 'index'); // ou autre catégorie selon ta logique
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-
-    try {
-        const method = productId ? 'PUT' : 'POST';
-        // Utilisez '/api/produits-index' comme URL au lieu de '/api/products'
-        const url = productId ? `/api/produits-index/${productId}` : '/api/produits-index';
-
-        const response = await fetch(url, {
-            method: method,
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la sauvegarde du produit');
-        }
-
-        const result = await response.json();
-        if (result.success) {
-            alert('Produit enregistré avec succès');
-            closeModal();
-            loadIndexProducts(); // Recharge les produits après ajout/modification
-        } else {
-            alert('Erreur lors de l\'enregistrement du produit');
-        }
-
-    } catch (error) {
-        console.error('Erreur lors de la sauvegarde du produit:', error);
-        alert('Erreur lors de la sauvegarde du produit');
-    }
-};
-
-
-window.deleteProduct = async function(id) {
-    try {
-        const response = await fetch(`/api/vetements/${id}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) {
-            throw new Error('Failed to delete product');
-        }
-        fetchProducts(); // Recharger les produits après suppression
-    } catch (error) {
-        console.error('Erreur lors de la suppression du produit:', error);
-    }
-};
-
-
+    
+        // Fonction pour supprimer un produit
+        window.deleteProduct = async function(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+            
+            try {
+                const response = await fetch(`/api/vetements/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to delete product');
+                }
+                fetchProducts(); // Recharger les produits après suppression
+            } catch (error) {
+                console.error('Erreur lors de la suppression du produit:', error);
+            }
+        };
+    
+        // Fonction pour récupérer un produit par son ID et ouvrir le modal pour modification
+        window.editProduct = function(id) {
+            fetch(`/api/vetements/${id}`)
+                .then(response => response.json())
+                .then(product => {
+                    openModal(product); // Ouvrir le modal et pré-remplir les champs avec les informations du produit
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération du produit:', error);
+                });
+        };
+    
+        // Fonction pour vérifier si l'utilisateur est administrateur
         async function checkAdmin() {
             try {
                 const response = await fetch('/check-session');
@@ -248,15 +230,16 @@ window.deleteProduct = async function(id) {
                 console.error('Failed to check admin session', error);
             }
         }
-
+    
+        // Lancer la vérification de la session administrateur au chargement de la page
         window.onload = checkAdmin;
-
-        window.onclick = function (event) {
+    
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
             const modal = document.getElementById('productModal');
-            if (event.target == modal) {
+            if (event.target === modal) {
                 modal.style.display = 'none';
             }
         };
     </script>
-</body>
-</html>
+    

@@ -6,6 +6,11 @@ const bodyParser = require('body-parser');
 const multer = require('multer'); // Pour gérer l'upload de fichiers
 const session = require('express-session');
 const dotenv = require('dotenv');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client('815007391612-1pssr0jnhe9oaqtsvjlalq2p3uut312l.apps.googleusercontent.com');
+const cors = require('cors');
+
+
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -13,6 +18,13 @@ dotenv.config();
 // Initialisation de l'application Express
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Utiliser cors pour permettre uniquement les requêtes provenant de localhost en mode test
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 // Middleware
 app.use(bodyParser.json());
@@ -201,20 +213,21 @@ app.get('/get-background-images', (req, res) => {
 });
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 // Route pour ajouter un vêtement
 app.post('/api/vetements', upload.single('image'), (req, res) => {
-  const { titre, description } = req.body; // Utilise 'titre' et 'description' (conforme à la base de données)
-  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+  const { titre, description } = req.body;
+  if (!titre) {
+    return res.status(400).json({ error: 'Le titre ne peut pas être vide' });
+  }
 
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
   const sql = 'INSERT INTO vêtements (titre, description, image_url) VALUES (?, ?, ?)';
   db.query(sql, [titre, description, imageUrl], (err, result) => {
-      if (err) {
-          console.error('Erreur lors de l\'ajout du vêtement:', err);
-          return res.status(500).json({ error: 'Erreur lors de l\'ajout du vêtement' });
-      }
-      console.log('Vêtement ajouté avec succès:', result);
-      res.json({ success: true });
+    if (err) {
+      console.error('Erreur lors de l\'ajout du vêtement:', err);
+      return res.status(500).json({ error: 'Erreur lors de l\'ajout du vêtement' });
+    }
+    res.json({ success: true });
   });
 });
 
@@ -226,12 +239,12 @@ app.put('/api/vetements/:id', upload.single('image'), (req, res) => {
 
   const sql = 'UPDATE vêtements SET titre = ?, description = ?, image_url = ? WHERE id = ?';
   db.query(sql, [titre, description, imageUrl, id], (err, result) => {
-      if (err) {
-          console.error('Erreur lors de la modification du vêtement:', err);
-          return res.status(500).json({ error: 'Erreur lors de la modification du vêtement' });
-      }
-      console.log('Vêtement modifié avec succès:', result);
-      res.json({ success: true });
+    if (err) {
+      console.error('Erreur lors de la modification du vêtement:', err);
+      return res.status(500).json({ error: 'Erreur lors de la modification du vêtement' });
+    }
+    console.log('Vêtement modifié avec succès:', result);
+    res.json({ success: true });
   });
 });
 
@@ -241,20 +254,21 @@ app.delete('/api/vetements/:id', (req, res) => {
 
   const sql = 'DELETE FROM vêtements WHERE id = ?';
   db.query(sql, [productId], (err, result) => {
-      if (err) {
-          console.error(`Erreur SQL lors de la suppression du produit avec l'ID ${productId}:`, err);
-          return res.status(500).json({ error: 'Erreur lors de la suppression du produit' });
-      }
+    if (err) {
+      console.error(`Erreur SQL lors de la suppression du produit avec l'ID ${productId}:`, err);
+      return res.status(500).json({ error: 'Erreur lors de la suppression du produit' });
+    }
 
-      if (result.affectedRows === 0) {
-          console.warn(`Produit avec l'ID ${productId} non trouvé.`);
-          return res.status(404).json({ error: 'Produit non trouvé' });
-      }
+    if (result.affectedRows === 0) {
+      console.warn(`Produit avec l'ID ${productId} non trouvé.`);
+      return res.status(404).json({ error: 'Produit non trouvé' });
+    }
 
-      console.log(`Produit avec l'ID ${productId} supprimé avec succès`);
-      res.json({ success: true, message: 'Produit supprimé avec succès' });
+    console.log(`Produit avec l'ID ${productId} supprimé avec succès`);
+    res.json({ success: true, message: 'Produit supprimé avec succès' });
   });
 });
+
 
 // Route pour récupérer un vêtement par son ID
 app.get('/api/vetements/:id', (req, res) => {
@@ -425,6 +439,137 @@ app.delete('/api/faqs/:id', checkAdminSession, (req, res) => {
   });
 });
 
+// Récupérer tous les articles avec leurs commentaires
+app.get('/api/articles', (req, res) => {
+  const sql = `
+    SELECT a.id as article_id, a.titre, a.contenu, a.image_url, a.created_at, a.updated_at,
+           c.id as comment_id, c.name as comment_name, c.commentaire, c.created_at as comment_created_at
+    FROM blog_articles a
+    LEFT JOIN blog_comments c ON a.id = c.article_id
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des articles et des commentaires:', err);
+      return res.status(500).json({ error: 'Erreur lors de la récupération des articles et des commentaires' });
+    }
+
+    // Organiser les articles avec leurs commentaires
+    const articlesMap = new Map();
+
+    results.forEach(row => {
+      if (!articlesMap.has(row.article_id)) {
+        articlesMap.set(row.article_id, {
+          id: row.article_id,
+          titre: row.titre,
+          contenu: row.contenu,
+          image_url: row.image_url,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          comments: [],
+        });
+      }
+
+      if (row.comment_id) {
+        articlesMap.get(row.article_id).comments.push({
+          id: row.comment_id,
+          name: row.comment_name,
+          commentaire: row.commentaire,
+          created_at: row.comment_created_at,
+        });
+      }
+    });
+
+    const articlesWithComments = Array.from(articlesMap.values());
+    res.json(articlesWithComments);
+  });
+});
+
+
+
+// Ajouter un nouvel article
+app.post('/api/articles', upload.single('image'), (req, res) => {
+  const { titre, contenu } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+  const sql = 'INSERT INTO blog_articles (titre, contenu, image_url) VALUES (?, ?, ?)';
+  db.query(sql, [titre, contenu, imageUrl], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de l\'ajout de l\'article:', err);
+          return res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'article' });
+      }
+      res.json({ success: true });
+  });
+});
+
+// Modifier un article de blog
+app.put('/api/articles/:id', upload.single('image'), (req, res) => {
+  const { id } = req.params;
+  const { titre, contenu } = req.body; // Correspond aux noms de colonnes de la base de données
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
+  const sql = 'UPDATE blog_articles SET titre = ?, contenu = ?, image_url = ? WHERE id = ?';
+  db.query(sql, [titre, contenu, imageUrl, id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la mise à jour de l\'article:', err);
+          return res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'article' });
+      }
+      res.json({ success: true });
+  });
+});
+
+// Supprimer un article de blog
+app.delete('/api/articles/:id', (req, res) => {
+  const articleId = req.params.id;
+  
+  const sql = 'DELETE FROM blog_articles WHERE id = ?';
+  db.query(sql, [articleId], (err, result) => {
+    if (err) {
+      console.error('Erreur lors de la suppression de l\'article:', err);
+      return res.status(500).json({ error: 'Erreur lors de la suppression de l\'article' });
+    }
+
+    // Vérifier si l'article a bien été supprimé
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Article non trouvé' });
+    }
+
+    res.json({ success: true, message: 'Article supprimé avec succès' });
+  });
+});
+
+
+/// Ajouter un commentaire à un article de blog
+app.post('/api/articles/:id/comments', (req, res) => {
+  const { name, text } = req.body;
+  const articleId = req.params.id;
+
+  if (!name || !text) {
+    console.error('Nom ou commentaire manquant');
+    return res.status(400).json({ error: 'Le nom et le commentaire sont obligatoires' });
+  }
+
+  const sql = 'INSERT INTO blog_comments (article_id, name, commentaire) VALUES (?, ?, ?)';
+  db.query(sql, [articleId, name, text], (err, result) => {
+    if (err) {
+      console.error('Erreur lors de l\'ajout du commentaire:', err);
+      return res.status(500).json({ error: 'Erreur lors de l\'ajout du commentaire' });
+    }
+    res.json({ success: true });
+  });
+});
+
+
+// Supprimer un commentaire d'un article de blog
+app.delete('/api/articles/:articleId/comments/:commentId', (req, res) => {
+  const { articleId, commentId } = req.params;
+  const sql = 'DELETE FROM blog_comments WHERE id = ? AND article_id = ?';
+  db.query(sql, [commentId, articleId], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la suppression du commentaire:', err);
+          return res.status(500).json({ error: 'Erreur lors de la suppression du commentaire' });
+      }
+      res.json({ success: true });
+  });
+});
 
 // Route pour enregistrer un message de contact
 app.post('/api/contact', (req, res) => {
@@ -445,6 +590,33 @@ app.post('/api/contact', (req, res) => {
   });
 });
 
+// Route pour vérifier le jeton Google
+app.post('/api/verify-google-token', async (req, res) => {
+  const { token } = req.body;
+  try {
+    console.log("Token reçu pour vérification:", token);  // Ajoute un log ici pour voir si le token est bien reçu
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '815007391612-1pssr0jnhe9oaqtsvjlalq2p3uut312l.apps.googleusercontent.com',
+    });
+    const payload = ticket.getPayload();
+    
+    console.log("Payload reçu de Google:", payload);  // Ajoute un log ici pour vérifier le contenu du payload
+
+    const user = {
+      googleId: payload.sub,
+      email: payload.email,
+      name: payload.name
+    };
+
+    // Retourner les informations de l'utilisateur
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error('Erreur lors de la vérification du token Google:', error);  // Log détaillé en cas d'erreur
+    res.status(401).json({ success: false });
+  }
+});
 
 // Lancement du serveur
 app.listen(PORT, () => {
