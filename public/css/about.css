@@ -82,7 +82,7 @@ body {
     padding: 20px;
     background-color: #f1f1f1;
     text-align: center;
-    margin-top: auto;
+    margin-top: 50px;
 }
 
 .footer-logo {
@@ -137,9 +137,7 @@ body.admin .edit-button {
     display: none;
 }
 
-.content{
-    height: auto;
-}
+
 .cta-container {
     margin-bottom: 0;
 }

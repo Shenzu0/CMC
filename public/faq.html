@@ -163,36 +163,29 @@
             }
         });
     
-        // Gestion du menu burger
-        document.getElementById('burger-menu').addEventListener('click', function () {
-            const navbarContent = document.getElementById('unique-navbar-content');
-            const navbarLogo = document.getElementById('navbar-logo');
+            // Gestion du menu burger
             const burgerMenu = document.getElementById('burger-menu');
             const closeMenuIcon = document.getElementById('close-menu-icon');
-            navbarContent.classList.toggle('active');
-            navbarLogo.classList.toggle('hidden');
-            burgerMenu.classList.toggle('hidden');
-            closeMenuIcon.style.display = navbarContent.classList.contains('active') ? 'flex' : 'none';
-    
-            if (navbarContent.classList.contains('active')) {
-                navbar.classList.add('fixed-transparent');
-            } else {
-                navbar.classList.remove('fixed-transparent');
+            const navbarContent = document.getElementById('unique-navbar-content');
+        
+            function toggleMenu() {
+                const isActive = navbarContent.classList.contains('active');
+                navbarContent.classList.toggle('active', !isActive);
+                burgerMenu.classList.toggle('active', !isActive);
+                closeMenuIcon.classList.toggle('active', !isActive);
             }
-        });
-    
-        // Fermer le menu burger
-        document.getElementById('close-menu-icon').addEventListener('click', function () {
-            const navbarContent = document.getElementById('unique-navbar-content');
-            const navbarLogo = document.getElementById('navbar-logo');
-            const burgerMenu = document.getElementById('burger-menu');
-            const closeMenuIcon = document.getElementById('close-menu-icon');
-            navbarContent.classList.remove('active');
-            navbarLogo.classList.remove('hidden');
-            burgerMenu.classList.remove('hidden');
-            closeMenuIcon.style.display = 'none';
-            navbar.classList.remove('fixed-transparent');
-        });
+        
+            burgerMenu.addEventListener('click', toggleMenu);
+            closeMenuIcon.addEventListener('click', toggleMenu);
+        
+            // Réinitialiser l'état du menu burger lors du redimensionnement
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 1050) {
+                    navbarContent.classList.remove('active');
+                    burgerMenu.classList.remove('active');
+                    closeMenuIcon.classList.remove('active');
+                }
+            });
     
         // Charger les FAQs depuis la base de données
         async function fetchFAQs() {

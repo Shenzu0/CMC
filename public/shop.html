@@ -111,7 +111,7 @@
                         </div>
                         ${isAdmin ? `
                         <div class="admin-buttons edit-button">
-                            <button class="edit-button" onclick="editProduct(${product.id})">Modifier</button>
+                           
                             <button class="delete-button" onclick="deleteProduct(${product.id})">Supprimer</button>
                         </div>` : ''}
                     `;
@@ -241,5 +241,29 @@
                 modal.style.display = 'none';
             }
         };
+
+                    // Gestion du menu burger
+                    const burgerMenu = document.getElementById('burger-menu');
+            const closeMenuIcon = document.getElementById('close-menu-icon');
+            const navbarContent = document.getElementById('unique-navbar-content');
+        
+            function toggleMenu() {
+                const isActive = navbarContent.classList.contains('active');
+                navbarContent.classList.toggle('active', !isActive);
+                burgerMenu.classList.toggle('active', !isActive);
+                closeMenuIcon.classList.toggle('active', !isActive);
+            }
+        
+            burgerMenu.addEventListener('click', toggleMenu);
+            closeMenuIcon.addEventListener('click', toggleMenu);
+        
+            // Réinitialiser l'état du menu burger lors du redimensionnement
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 1050) {
+                    navbarContent.classList.remove('active');
+                    burgerMenu.classList.remove('active');
+                    closeMenuIcon.classList.remove('active');
+                }
+            });
     </script>
     

@@ -232,21 +232,29 @@ app.post('/api/vetements', upload.single('image'), (req, res) => {
 });
 
 // Route pour modifier un vêtement
-app.put('/api/vetements/:id', upload.single('image'), (req, res) => {
+app.put('/api/vetements/:id', (req, res) => {
   const id = req.params.id;
-  const { titre, description } = req.body;
-  const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+  const { titre, description, image_url, prix } = req.body;
 
-  const sql = 'UPDATE vêtements SET titre = ?, description = ?, image_url = ? WHERE id = ?';
-  db.query(sql, [titre, description, imageUrl, id], (err, result) => {
-    if (err) {
-      console.error('Erreur lors de la modification du vêtement:', err);
-      return res.status(500).json({ error: 'Erreur lors de la modification du vêtement' });
-    }
-    console.log('Vêtement modifié avec succès:', result);
-    res.json({ success: true });
+  const sql = `
+      UPDATE vêtements 
+      SET 
+          titre = COALESCE(?, titre), 
+          description = COALESCE(?, description), 
+          image_url = COALESCE(?, image_url), 
+          prix = COALESCE(?, prix) 
+      WHERE id = ?`;
+
+  db.query(sql, [titre, description, image_url, prix, id], (err, result) => {
+      if (err) {
+          console.error('Erreur lors de la modification du vêtement:', err);
+          return res.status(500).json({ error: 'Erreur lors de la modification du vêtement' });
+      }
+      res.json({ success: true });
   });
 });
+
+
 
 // Route pour supprimer un vêtement
 app.delete('/api/vetements/:id', (req, res) => {

@@ -6,42 +6,211 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link rel="stylesheet" href="./css/navbar.css">
     <link rel="stylesheet" href="./css/product-detail.css">
-</style>
-</head>
-<body>
-    <div class="unique-navbar transparent" id="unique-navbar">
-        <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="unique-navbar-logo" id="navbar-logo"></a>
-        <div class="burger-menu" id="burger-menu">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <nav class="unique-navbar-content" id="unique-navbar-content">
-            <a href="index.html" class="nav-link">ACCUEIL</a>
-            <a href="shop.html" class="nav-link">PRODUITS</a>
-            <a href="about.html" class="nav-link">À PROPOS</a>
-            <a href="contact.html" class="nav-link">CONTACT</a>
-            <a href="faq.html" class="nav-link">FAQ</a>
-            <a href="blog.html" class="nav-link">BLOG</a>
-            <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
-        </nav>
-    </div>
-    <div class="content">
-        <div class="product-detail" id="product-detail">
-            <!-- Le contenu du produit sera généré ici -->
-        </div>
-    </div>
-    <footer class="footer">
-        <div class="footer-wrapper">
-            <a href="index.html"><img src="mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="footer-logo"></a>
-            <div class="footer-links">
-                <a href="./politiqueDonnées.html">Politique de données</a>
+    <body>
+        <div class="unique-navbar transparent" id="unique-navbar">
+            <a href="index.html">
+                <img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp"
+                    alt="CMC MODE" class="unique-navbar-logo" id="navbar-logo">
+            </a>
+            <div class="burger-menu" id="burger-menu">
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
-            <div class="social-links">
-                <a href="#"><img src="images/facebook-icon.svg" alt="Facebook"></a>
+            <nav class="unique-navbar-content" id="unique-navbar-content">
+                <a href="index.html" class="nav-link">ACCUEIL</a>
+                <a href="shop.html" class="nav-link">PRODUITS</a>
+                <a href="about.html" class="nav-link">À PROPOS</a>
+                <a href="contact.html" class="nav-link">CONTACT</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+                <a href="blog.html" class="nav-link">BLOG</a>
+                <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
+            </nav>
+        </div>
+    
+        <div class="content">
+            <div class="product-detail" id="product-detail">
+                <!-- Le contenu du produit sera généré ici -->
             </div>
         </div>
-        <p>&copy; 2024 CMC MODE. Tous droits réservés.</p>
-    </footer>
-</body>    
-</html>
+    
+        <footer class="footer">
+            <div class="footer-wrapper">
+                <a href="index.html">
+                    <img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp"
+                        alt="CMC MODE" class="footer-logo">
+                </a>
+                <div class="footer-links">
+                    <a href="./politiqueDonnées.html">Politique de données</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><img src="images/facebook-icon.svg" alt="Facebook"></a>
+                </div>
+            </div>
+            <p>&copy; 2024 CMC MODE. Tous droits réservés.</p>
+        </footer>
+    
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">Modifier le produit</h2>
+                <label for="modalInput">Nouvelle valeur:</label>
+                <input type="text" id="modalInput" placeholder="Nouvelle valeur">
+                <button id="saveButton">Enregistrer</button>
+            </div>
+        </div>
+    
+        <script>
+            let currentField;
+            let currentId;
+            let currentProduct;
+        
+            async function fetchProductDetails() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                console.log(`Product ID from URL: ${productId}`);
+        
+                if (!productId) {
+                    console.error('Product ID is missing from URL');
+                    return;
+                }
+        
+                try {
+                    const response = await fetch(`http://localhost:3000/api/vetements/${productId}`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+        
+                    currentProduct = await response.json();
+                    console.log(`Product data: ${JSON.stringify(currentProduct)}`);
+        
+                    if (!currentProduct || Object.keys(currentProduct).length === 0) {
+                        throw new Error('Product data is empty');
+                    }
+        
+                    const productDetailContainer = document.getElementById('product-detail');
+                    if (productDetailContainer) {
+                        productDetailContainer.innerHTML = `
+                            <div class="product-image">
+                                <img src="${currentProduct.image_url}" alt="${currentProduct.titre}">
+                            </div>
+                            <div class="product-info">
+                                <h1 class="title">${currentProduct.titre}</h1>
+                                <p class="description">${currentProduct.description}</p>
+                                <div class="price">${currentProduct.prix ? `${currentProduct.prix} €` : 'Prix non disponible'}</div>
+                                ${document.body.classList.contains('admin') ? `
+                                <div class="admin-buttons">
+                                    <button onclick="openModal('titre', '${currentProduct.id}', '${currentProduct.titre}')">Modifier le titre</button>
+                                    <button onclick="openModal('description', '${currentProduct.id}', '${currentProduct.description}')">Modifier la description</button>
+                                    <button onclick="openModal('prix', '${currentProduct.id}', '${currentProduct.prix || ''}')">Modifier le prix</button>
+                                </div>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        console.error('Product detail container not found');
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch product details', error);
+                }
+            }
+        
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchProductDetails();
+        
+                fetch('http://localhost:3000/check-session')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.isAdmin) {
+                            document.body.classList.add('admin');
+                        } else {
+                            document.body.classList.remove('admin');
+                        }
+                    })
+                    .catch(error => console.error('Error checking session:', error));
+            });
+        
+            function openModal(field, id, currentValue) {
+                currentField = field;
+                currentId = id;
+                document.getElementById('modalInput').value = currentValue; // Injecter la valeur actuelle dans le champ
+                document.getElementById('modal').style.display = 'block'; // Afficher le modal
+            }
+        
+            function closeModal() {
+                document.getElementById('modal').style.display = 'none'; // Cacher le modal
+            }
+        
+            document.getElementById('saveButton').addEventListener('click', async () => {
+                const newValue = document.getElementById('modalInput').value;
+                if (newValue.trim() === "") {
+                    alert("La valeur ne peut pas être vide"); // Assurez-vous qu'il y a une valeur
+                    return;
+                }
+        
+                // Préparer le corps de la requête avec les valeurs actuelles
+                const updatedProduct = { 
+                    id: currentId,
+                    titre: currentProduct.titre,  // Conserver l'ancien titre
+                    description: currentProduct.description, // Conserver l'ancienne description
+                    image_url: currentProduct.image_url, // Conserver l'ancienne image
+                    prix: currentProduct.prix // Conserver l'ancien prix
+                };
+        
+                // Mettre à jour le champ correspondant
+                if (currentField === 'titre') {
+                    updatedProduct.titre = newValue; // Met à jour le titre
+                } else if (currentField === 'description') {
+                    updatedProduct.description = newValue; // Met à jour la description
+                } else if (currentField === 'prix') {
+                    updatedProduct.prix = newValue; // Met à jour le prix
+                } 
+        
+                await saveChanges(currentId, updatedProduct); // Enregistrer les changements
+                closeModal(); // Fermer le modal
+            });
+        
+            async function saveChanges(id, updatedProduct) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/vetements/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedProduct) // Mettre à jour la base de données
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    fetchProductDetails(); // Rafraîchir les détails du produit après modification
+                } catch (error) {
+                    console.error('Failed to save changes', error);
+                }
+            }
+        
+            document.getElementById('burger-menu').addEventListener('click', function () {
+                const navbarContent = document.getElementById('unique-navbar-content');
+                navbarContent.classList.toggle('active'); // Afficher ou cacher le menu
+            });
+        
+            window.addEventListener('resize', function () {
+                const navbarContent = document.getElementById('unique-navbar-content');
+                const burgerMenu = document.getElementById('burger-menu');
+                const closeMenuIcon = document.getElementById('close-menu-icon');
+                if (window.innerWidth > 1050) {
+                    navbarContent.classList.remove('active');
+                    burgerMenu.classList.remove('active');
+                    closeMenuIcon.classList.remove('active');
+                }
+            });
+        
+            window.addEventListener('scroll', function () {
+                const navbar = document.querySelector('.unique-navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('solid');
+                } else {
+                    navbar.classList.remove('solid');
+                }
+            });
+        </script>
+         
