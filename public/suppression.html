@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppression des Données Utilisateur</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./css/navbar.css">
+
+</head>    <style>body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    
+    .container {
+        width: 80%;
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    h1, h2 {
+        color: #333;
+    }
+    
+    a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    
+    a:hover {
+        text-decoration: underline;
+    }
+    </style>
+<body>
+    <div class="unique-navbar transparent" id="unique-navbar">
+        <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="Logo" class="unique-navbar-logo" id="navbar-logo"></a>
+
+        <div class="burger-menu" id="burger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="close-menu-icon" id="close-menu-icon">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <nav class="unique-navbar-content" id="unique-navbar-content">
+            <a href="index.html" class="nav-link">ACCUEIL</a>
+            <a href="shop.html" class="nav-link">PRODUITS</a>
+            <a href="about.html" class="nav-link">À PROPOS</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+            <a href="faq.html" class="nav-link">FAQ</a>
+            <a href="blog.html" class="nav-link">BLOG</a>
+            <a href="#" class="nav-link" onclick="logout()">DÉCONNEXION</a>
+        </nav>
+    </div>
+    <div class="container">
+        <h1>Suppression des Données Utilisateur</h1>
+        <p>Nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles. Voici comment vous pouvez demander la suppression de vos données :</p>
+
+        <h2>1. Comment demander la suppression</h2>
+        <p>Pour demander la suppression de vos données, veuillez nous envoyer un e-mail à l'adresse suivante : <a href="CMC@gmail.com">support@votre-site.com</a>. Assurez-vous d'inclure les informations suivantes :</p>
+        <ul>
+            <li>Votre nom</li>
+            <li>Votre adresse e-mail</li>
+            <li>Une description de votre demande</li>
+        </ul>
+
+        <h2>2. Traitement des demandes</h2>
+        <p>Nous traiterons votre demande dans un délai de 30 jours. Nous vous informerons par e-mail une fois que vos données auront été supprimées.</p>
+
+        <h2>3. Informations supplémentaires</h2>
+        <p>Pour plus d'informations sur notre politique de confidentialité, veuillez consulter notre <a href="politique.html">Politique de Confidentialité</a>.</p>
+
+        <h2>4. Contact</h2>
+        <p>Si vous avez des questions concernant la suppression de vos données, veuillez nous contacter à l'adresse : <a href="CMC@gmail.com">support@votre-site.com</a></p>
+    </div>
+</body>
+<script>            // Gestion du menu burger
+    const burgerMenu = document.getElementById('burger-menu');
+    const closeMenuIcon = document.getElementById('close-menu-icon');
+    const navbarContent = document.getElementById('unique-navbar-content');
+
+    function toggleMenu() {
+        const isActive = navbarContent.classList.contains('active');
+        navbarContent.classList.toggle('active', !isActive);
+        burgerMenu.classList.toggle('active', !isActive);
+        closeMenuIcon.classList.toggle('active', !isActive);
+    }
+
+    burgerMenu.addEventListener('click', toggleMenu);
+    closeMenuIcon.addEventListener('click', toggleMenu);
+
+    // Réinitialiser l'état du menu burger lors du redimensionnement
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 1050) {
+            navbarContent.classList.remove('active');
+            burgerMenu.classList.remove('active');
+            closeMenuIcon.classList.remove('active');
+        }
+    });</script>
+</html>
