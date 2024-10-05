@@ -350,3 +350,8 @@ label {
     text-align: center;
     margin-bottom: 40px;
 }
+
+.post-title{
+    margin-bottom: 20px;
+    font-size: 30px;
+}
