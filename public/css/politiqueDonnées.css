@@ -1,71 +1,51 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    color: #333;
 }
 
 .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-top: 30px;
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
 }
 
 h1 {
     text-align: center;
-    color: #222;
+    margin-top: 20px;
 }
 
 h2 {
-    color: #555;
-}
-
-p {
-    line-height: 1.6;
+    color: #333;
 }
 
 .section {
-    margin-bottom: 20px;
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .footer {
-    padding: 20px;
-    background-color: #f1f1f1;
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
     text-align: center;
 }
 
-.footer-logo {
-    height: 50px;
-}
-
-.footer-links, .social-links {
-    margin: 20px 0;
-}
-
-.footer-links a, .social-links a {
+.footer-links a {
+    color: #fff;
     margin: 0 10px;
     text-decoration: none;
-    color: black;
 }
 
-.footer-links a:hover, .social-links a:hover {
-    color: gray;
+.footer-links a:hover {
+    text-decoration: underline;
 }
 
 .bFoot {
-    margin-top: 10px;
-}
-
-a {
-    color: #007BFF;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
+    margin: 10px 0 0;
 }

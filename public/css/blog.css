@@ -6,7 +6,6 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
-
 .section {
     padding: 50px 20px;
 }
@@ -19,7 +18,6 @@ body {
 .blog-header h1 {
     font-size: 3em;
     margin-bottom: 10px;
-    color: ;
 }
 
 .blog-header p {
@@ -34,7 +32,6 @@ body {
     padding: 20px;
     max-width: 600px; /* Limite la largeur maximale du conteneur */
     width: 100%; /* Assurez-vous qu'il occupe toute la largeur disponible jusqu'à la limite */
-    
 }
 
 .post-image {
@@ -69,98 +66,88 @@ body {
     margin-top: 20px;
 }
 
-.comment-form textarea,
-.comment-form input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #444;
-    color: #ffffff;
+/* Styles pour le formulaire de commentaire */
+.styled-input, .styled-textarea {
+    width: 100%; /* Full width */
+    padding: 12px; /* Padding for better spacing */
+    margin: 10px 0; /* Space between inputs */
+    border: 1px solid #ccc; /* Light border color */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Text color */
+    font-size: 1em; /* Font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transition for focus */
 }
 
-.comment-form button {
+/* Focus effect for inputs */
+.styled-input:focus, .styled-textarea:focus {
+    border-color: #000; /* Dark border on focus */
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6); /* Shadow on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Textarea specific styles */
+.styled-textarea {
+    resize: vertical; /* Allow vertical resizing only */
+    min-height: 100px; /* Minimum height */
+}
+
+/* Label styles */
+label {
+    font-weight: bold; /* Bold labels */
+    margin-top: 10px; /* Space above labels */
+    display: block; /* Ensure labels are above inputs */
+    color: #000; /* Label color */
+}
+
+/* Boutons de soumission */
+.submit-button {
     padding: 10px 20px;
-    background-color: #ff6600;
+    background-color: #000; /* Noir */
     border: none;
     border-radius: 5px;
     color: #fff;
     font-size: 1em;
     cursor: pointer;
+    width: 100%; /* Full width */
 }
 
-.comment-form button:hover {
-    background-color: #e65c00;
+.submit-button:hover {
+    background-color: #222; /* Un noir plus foncé au survol */
 }
 
-.facebook-section {
-margin-top: 50px;
-padding: 20px;
-background-color: #222;
-border-radius: 10px;
-text-align: center; /* Center align the content */
-}
-
-.facebook-section h2 {
-text-align: center;
-font-size: 2.5em;
-margin-bottom: 20px;
-color: #ffffff;
-}
-
-.fb-page {
-display: inline-block; /* Center the fb-page */
-width: 100%;
-}
-
-.publication-title {
-    color: white; /* Change la couleur du texte en blanc */
-    font-size: 3em; /* Agrandit la taille du texte */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ajoute une ombre au texte pour une meilleure lisibilité */
-}
-
-.publication-description {
-color: white; /* Change la couleur du texte en blanc */
-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ajoute une ombre au texte pour une meilleure lisibilité */
-}
-
-
-
-.modal-content input[type="text"],
-.modal-content textarea,
-.modal-content input[type="file"] {
-    width: calc(100% - 20px); /* Full width minus padding */
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffffff;
-    color: #000000;
-}
-
-.modal-content button {
-    padding: 10px 20px;
-    background-color: #ff6600;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 1em;
-    cursor: pointer;
-}
-
-.modal-content button:hover {
-    background-color: #e65c00;
-}
-
-.modal-content label {
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-.modal-content h2 {
-    text-align: center;
+.social-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align the buttons */
     margin-bottom: 20px;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0; /* Background color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px 0;
+    width: 100%; /* Full width for buttons */
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Redimensionnement de l'icône */
+.social-icon {
+    width: 20px; /* Size of the logo */
+    height: 20px; /* Size of the logo */
+    margin-right: 10px; /* Space between logo and text */
+}
+
+/* Style pour les boutons de connexion */
+.social-button:hover {
+    background-color: #ccc; /* Un gris clair au survol */
 }
 
 .modal {
@@ -215,92 +202,96 @@ text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ajoute une ombre au texte pour u
 #articleModalContent button,
 #commentModalContent button {
     padding: 10px 20px;
-    background-color: #ff6600;
+    background-color: #000; /* Noir */
     border: none;
     border-radius: 5px;
     color: #fff;
     font-size: 1em;
     cursor: pointer;
+    width: 100%; /* Full width */
 }
 
 #articleModalContent button:hover,
 #commentModalContent button:hover {
-    background-color: #e65c00;
+    background-color: #222; /* Un noir plus foncé au survol */
 }
+
 .fade-in {
-opacity: 0;
-transform: translateY(20px);
-transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
 }
 
 .fade-in-visible {
-opacity: 1;
-transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Effet de lumière */
 .light-effect {
-position: relative;
-overflow: hidden;
+    position: relative;
+    overflow: hidden;
 }
 
 .light-effect::before {
-content: '';
-position: absolute;
-top: -50%;
-left: -50%;
-width: 200%;
-height: 200%;
-background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
-transform: translateX(-50%) translateY(-50%) scale(0);
-transition: transform 0.5s ease-out;
-z-index: 0;
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+    transform: translateX(-50%) translateY(-50%) scale(0);
+    transition: transform 0.5s ease-out;
+    z-index: 0;
 }
 
 .light-effect:hover::before {
-transform: translateX(-50%) translateY(-50%) scale(1.2);
-transition: transform 1s ease-out;
+    transform: translateX(-50%) translateY(-50%) scale(1.2);
+    transition: transform 1s ease-out;
 }
 
 /* Style des articles */
 .post {
-position: relative;
-background-color: #312d2d;
-border: 1px solid #444;
-border-radius: 10px;
-margin: 20px auto; /* Centrer horizontalement */
-padding: 20px;
-max-width: 600px; /* Limite la largeur maximale du conteneur */
-width: 100%; /* Assurez-vous qu'il occupe toute la largeur disponible jusqu'à la limite */
-overflow: hidden;
-z-index: 1;
+    position: relative;
+    background-color: #312d2d;
+    border: 1px solid #444;
+    border-radius: 10px;
+    margin: 20px auto; /* Centrer horizontalement */
+    padding: 20px;
+    max-width: 600px; /* Limite la largeur maximale du conteneur */
+    width: 100%; /* Assurez-vous qu'il occupe toute la largeur disponible jusqu'à la limite */
+    overflow: hidden;
+    z-index: 1;
 }
 
 .post-title {
-position: relative;
-z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 .post-image {
-position: relative;
-z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 .post-content {
-position: relative;
-z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-.fade-in {
-transition: none;
+    .fade-in {
+        transition: none;
+    }
 }
-}
+
 .comment-section h3 {
-color: white;
-font-size: 1.5em; 
-margin-bottom: 20px;
+    color: black; /* Texte en noir pour le titre des commentaires */
+    font-size: 1.5em; 
+    margin-bottom: 20px;
 }
+
 .footer {
     padding: 20px;
     background-color: #f1f1f1;
@@ -322,10 +313,40 @@ margin-bottom: 20px;
 }
 
 .footer-links a:hover, .social-links a:hover {
-    color: gray;
+    color: gray; /* Couleur au survol */
 }
 
 .bFoot {
     margin-top: 10px;
 }
 
+/* Styles pour centrer le contenu à l'intérieur de la div avec la classe S9gUrf-YoZ4jf */
+.S9gUrf-YoZ4jf {
+    display: flex;              /* Utilise le modèle de boîte flex */
+    justify-content: center;    /* Centre horizontalement le contenu */
+    align-items: center;        /* Centre verticalement le contenu (si nécessaire) */
+    flex-direction: row;        /* Aligne les éléments en ligne (horizontalement) */
+    margin: 20px 0;            /* Ajoute un espacement au-dessus et en dessous de la div */
+}
+
+/* Optionnel : pour le bouton, vous pouvez également ajouter ces styles */
+.social-button {
+    background-color: #4285F4; /* Couleur de fond Google */
+    color: white; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    border-radius: 5px; /* Coins arrondis */
+    padding: 10px 20px; /* Espacement interne */
+    cursor: pointer; /* Curseur main */
+    font-size: 16px; /* Taille de la police */
+    transition: background-color 0.3s; /* Transition douce pour le changement de couleur */
+}
+
+/* Effet de survol pour le bouton */
+.social-button:hover {
+    background-color: #357AE8; /* Couleur de fond au survol */
+}
+
+#commentModalTitle{
+    text-align: center;
+    margin-bottom: 40px;
+}

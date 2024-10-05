@@ -1,0 +1,44 @@
+.footer {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.footer-links a {
+    color: #fff;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.footer-links a {
+    color: #fff; /* Couleur par défaut des liens */
+    margin: 0 10px;
+    text-decoration: none; /* Pas de soulignement par défaut */
+    padding: 5px 10px; /* Ajout de padding pour un meilleur clic */
+    border-radius: 5px; /* Coins arrondis pour un effet plus doux */
+    transition: background-color 0.3s ease; /* Animation douce pour le changement de couleur */
+}
+
+.footer-links a:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Changement de fond lors du survol */
+    color: #fff; /* Couleur du texte */
+}
+
+.bFoot {
+    margin: 10px 0 0;
+}
+
+.footer-logo {
+    transition: transform 0.3s ease; /* Animation douce pour le changement de taille */
+}
+
+.social-links img {
+    transition: transform 0.3s ease; /* Animation douce pour le changement de taille */
+}
+
+.footer-logo:hover,
+.social-links img:hover {
+    transform: scale(1.1); /* Augmenter la taille à 110% lors du survol */
+}
+

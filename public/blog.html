@@ -23,6 +23,8 @@
         <meta property="business:contact_data:postal_code" content="62100">
         <meta property="business:contact_data:country_name" content="France">
         <link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./css/footer.css">
+
 
         <link rel="stylesheet" href="./css/navbar.css">
         <link rel="stylesheet" href="./css/blog.css">
@@ -80,35 +82,53 @@
                 <button onclick="saveArticle()">Enregistrer</button>
             </div>
         </div>
+<!-- Modal pour les commentaires -->
+<div id="commentModal" class="modal">
+    <div id="commentModalContent" class="modal-content">
+        <span class="close" onclick="closeCommentModal()">&times;</span>
+        <h2 id="commentModalTitle">Ajouter un commentaire</h2>
 
-        <!-- Modal pour les commentaires -->
-        <div id="commentModal" class="modal">
-            <div id="commentModalContent" class="modal-content">
-                <span class="close" onclick="closeCommentModal()">&times;</span>
-                <h2 id="commentModalTitle">Ajouter un commentaire</h2>
-
-                <!-- Section de connexion Google -->
-                <div id="signin-section" style="display: block;">
-                    <button id="signin-button">Connectez-vous avec Google</button>
-                </div>
-
-                <!-- Formulaire de commentaire, masqué tant que l'utilisateur n'est pas connecté -->
-                <form id="commentForm" onsubmit="saveComment(event)" style="display: none;" novalidate>
-                    <input type="hidden" id="commentArticleId" name="articleId">
-                    
-                    <!-- Champ pour le nom de l'utilisateur -->
-                    <label for="commentName">Nom</label>
-                    <input type="text" id="commentName" name="commentName" placeholder="Votre nom" required readonly>
-                    
-                    <!-- Champ pour le texte du commentaire -->
-                    <label for="commentText">Commentaire</label>
-                    <textarea id="commentText" name="commentText" placeholder="Votre commentaire" required></textarea>
-                    
-                    <!-- Bouton pour soumettre le commentaire -->
-                    <button type="submit">Enregistrer</button>
-                </form>
-            </div>
+        <!-- Section de connexion Google -->
+        <div id="signin-section" class="social-login">
+            <button id="signin-button" class="social-button">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Google Logo" class="social-icon">
+                Connectez-vous avec Google
+            </button>
         </div>
+
+        <!-- Section de connexion Facebook -->
+        <div id="facebook-signin-section" class="social-login">
+            <button id="facebook-signin-button" class="social-button" onclick="facebookLogin()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo" class="social-icon">
+                Connectez-vous avec Facebook
+            </button>
+        </div>
+
+        <!-- Formulaire de commentaire, masqué tant que l'utilisateur n'est pas connecté -->
+        <form id="commentForm" onsubmit="saveComment(event)" style="display: none;" novalidate>
+            <input type="hidden" id="commentArticleId" name="articleId">
+
+            <!-- Champ pour le nom de l'utilisateur -->
+            <label for="commentName">Nom</label>
+            <input type="text" id="commentName" name="commentName" placeholder="Votre nom" required readonly>
+
+            <!-- Champ pour le texte du commentaire -->
+            <label for="commentText">Commentaire</label>
+            <textarea id="commentText" name="commentText" placeholder="Votre commentaire" required></textarea>
+
+            <!-- Bouton pour soumettre le commentaire -->
+            <button type="submit" class="submit-button">Enregistrer</button>
+        </form>
+
+        <!-- Bouton de déconnexion -->
+        <button id="logout-button" class="social-button" style="display: none;" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+
+
+
+
 
 
         <!-- Footer -->
@@ -117,6 +137,8 @@
                 <a href="index.html"><img src="./mg2/6681c1660d9613fbf3097b52_28a8288e-5e38-4119-805b-f6eb28d25c1b-p-130x130q80.webp" alt="CMC MODE" class="footer-logo"></a>
                 <div class="footer-links">
                     <a href="./politiqueDonnées.html">Politique de données</a>
+                    <a href="./conditions.html">Conditions de Service</a>
+                    <a href="./suppression.html">Suppression des Données Utilisateur</a>
                 </div>
                 <div class="social-links">
                     <a href="#"><img src="images/facebook-icon.svg" alt="Facebook"></a>
@@ -124,6 +146,7 @@
             </div>
             <p class="bFoot">&copy; 2024 CMC MODE. Tous droits réservés.</p>
         </footer>
+    </body>
         <script>
             let isEditMode = false;
             let isAdmin = false;
@@ -240,15 +263,46 @@ async function fetchArticles() {
     
             // Fonction pour gérer la réponse de Google Sign-In
             function handleCredentialResponse(response) {
-                console.log("Google Sign-In réponse reçue:", response);
-    
-                const token = response.credential;
-    
-                if (!token) {
-                    console.error("Aucun token reçu de Google Sign-In.");
-                    return;
-                }
-    
+    console.log("Google Sign-In réponse reçue:", response);
+
+    const token = response.credential;
+
+    if (!token) {
+        console.error("Aucun token reçu de Google Sign-In.");
+        return;
+    }
+
+    // Envoyer le token au serveur pour le vérifier
+    fetch('/api/verify-google-token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("Réponse du serveur pour la vérification Google:", data);
+
+        if (data.success) {
+            googleUser = data.user;
+            localStorage.setItem('googleUser', JSON.stringify(googleUser)); // Sauvegarder l'utilisateur dans le local storage
+
+            // Masquer le bouton de connexion et afficher le formulaire de commentaire
+            document.getElementById('signin-section').style.display = 'none';
+            document.getElementById('commentForm').style.display = 'block';
+
+            // Préremplir le nom de l'utilisateur connecté
+            document.getElementById('commentName').value = googleUser.name;
+
+            console.log("Authentification réussie. Nom d'utilisateur:", googleUser.name);
+        } else {
+            console.error('Échec de l\'authentification Google:', data.error);
+        }
+    })
+    .catch(err => console.error('Erreur d\'authentification Google:', err));
+
+
                 // Envoyer le token au serveur pour le vérifier
                 fetch('/api/verify-google-token', {
                     method: 'POST',
@@ -281,23 +335,27 @@ async function fetchArticles() {
     
             // Vérifier si l'utilisateur est déjà connecté avec Google
             function checkGoogleAuthStatus() {
-                const signinButton = document.getElementById('signin-button');
-                const commentForm = document.getElementById('commentForm');
-                
-                // Vérifiez si les éléments existent avant de tenter de modifier leur style
-                if (!signinButton || !commentForm) {
-                    console.error("Les éléments 'signin-button' ou 'commentForm' sont introuvables dans le DOM.");
-                    return;  // Arrêter l'exécution si les éléments ne sont pas trouvés
-                }
+    const signinButton = document.getElementById('signin-button');
+    const commentForm = document.getElementById('commentForm');
+    const logoutButton = document.getElementById('logout-button');
     
-                if (googleUser) {
-                    signinButton.style.display = 'none';
-                    commentForm.style.display = 'block';
-                } else {
-                    signinButton.style.display = 'block';
-                    commentForm.style.display = 'none';
-                }
-            }
+    // Vérifiez si les éléments existent avant de tenter de modifier leur style
+    if (!signinButton || !commentForm || !logoutButton) {
+        console.error("Les éléments 'signin-button', 'commentForm' ou 'logout-button' sont introuvables dans le DOM.");
+        return;  // Arrêter l'exécution si les éléments ne sont pas trouvés
+    }
+
+    if (googleUser || localStorage.getItem('facebookUser')) {
+        signinButton.style.display = 'none';
+        commentForm.style.display = 'block';
+        logoutButton.style.display = 'block'; // Afficher le bouton de déconnexion
+    } else {
+        signinButton.style.display = 'block';
+        commentForm.style.display = 'none';
+        logoutButton.style.display = 'none'; // Cacher le bouton de déconnexion
+    }
+}
+
     
             // Fonction pour sauvegarder un article
             async function saveArticle() {
@@ -478,13 +536,117 @@ async function fetchArticles() {
 window.onload = function() {
     fetchArticles();
     checkAdminStatus(); // Vérifie si l'utilisateur est un admin
+    checkLoginStatus(); // Vérifie si l'utilisateur est déjà connecté
+    checkGoogleAuthStatus(); // Vérifie l'état de connexion de Google
+    checkFacebookAuthStatus(); // Vérifie l'état de connexion de Facebook
 }
+
+
+function facebookLogin() {
+    FB.login(function(response) {
+        if (response.authResponse) {
+            console.log('Bienvenue !  Répondre de Facebook:', response);
+            fetchUserDetails(response.authResponse.accessToken); // Obtenez les détails de l'utilisateur
+        } else {
+            console.log('Utilisateur a annulé la connexion ou l\'authentification a échoué.');
+        }
+    }, {scope: 'public_profile,email'}); // Demande des permissions
+}
+
+function fetchUserDetails(accessToken) {
+    FB.api('/me', {fields: 'name,email'}, function(response) {
+        console.log('Détails de l\'utilisateur : ', response);
+        document.getElementById('commentName').value = response.name; // Préremplir le nom dans le formulaire de commentaire
+        localStorage.setItem('facebookUser', JSON.stringify(response)); // Sauvegarder l'utilisateur dans le local storage
+
+        document.getElementById('facebook-signin-section').style.display = 'none'; // Cacher le bouton Facebook
+        document.getElementById('commentForm').style.display = 'block'; // Afficher le formulaire de commentaire
+    });
+}
+
+
 
 
         </script>
     
         <!-- Google Sign-In Script -->
         <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script>
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId      : '518965304098880', // Remplacez par votre ID d'application Facebook
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v13.0' // Utilisez la version appropriée de l'API Graph
+              });
+            };
+          
+            (function(d, s, id){
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) {return;}
+              js = d.createElement(s); js.id = id;
+              js.src = "https://connect.facebook.net/fr_FR/sdk.js";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+
+            function checkLoginStatus() {
+    const storedGoogleUser = localStorage.getItem('googleUser');
+    const storedFacebookUser = localStorage.getItem('facebookUser');
+
+    if (storedGoogleUser) {
+        googleUser = JSON.parse(storedGoogleUser);
+        document.getElementById('signin-section').style.display = 'none';
+        document.getElementById('commentForm').style.display = 'block';
+        document.getElementById('commentName').value = googleUser.name; // Préremplir le nom
+    }
+
+    if (storedFacebookUser) {
+        const facebookUser = JSON.parse(storedFacebookUser);
+        document.getElementById('facebook-signin-section').style.display = 'none';
+        document.getElementById('commentForm').style.display = 'block';
+        document.getElementById('commentName').value = facebookUser.name; // Préremplir le nom
+    }
+}
+function resetLoginUI() {
+    // Réafficher les sections de connexion
+    document.getElementById('signin-section').style.display = 'block'; // Afficher le bouton de connexion Google
+    document.getElementById('facebook-signin-section').style.display = 'block'; // Afficher le bouton de connexion Facebook
+    document.getElementById('commentForm').style.display = 'none'; // Masquer le formulaire de commentaire
+    document.getElementById('commentName').value = ''; // Réinitialiser le champ du nom
+}
+
+function logout() {
+    // Déconnexion de Google
+    if (googleUser) {
+        google.accounts.id.revoke(googleUser.email, function(response) {
+            console.log("Utilisateur déconnecté de Google:", response);
+            googleUser = null;
+            localStorage.removeItem('googleUser'); // Retirer l'utilisateur de localStorage
+            resetLoginUI(); // Réinitialiser l'interface utilisateur
+        });
+    }
+
+    // Vérifiez si l'utilisateur est connecté à Facebook
+    FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+            // Déconnexion de Facebook
+            FB.logout(function(response) {
+                console.log('Utilisateur déconnecté de Facebook:', response);
+                localStorage.removeItem('facebookUser'); // Retirer l'utilisateur de localStorage
+                resetLoginUI(); // Réinitialiser l'interface utilisateur
+            });
+        } else {
+            console.log('L\'utilisateur n\'est pas connecté à Facebook.');
+            resetLoginUI(); // Réinitialiser l'interface utilisateur même si l'utilisateur n'est pas connecté à Facebook
+        }
+    });
+}   
+
+
+
+          </script>
+          
+          
 
     </body>
     </html>
