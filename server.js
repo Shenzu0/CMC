@@ -9,6 +9,10 @@ const dotenv = require('dotenv');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('815007391612-1pssr0jnhe9oaqtsvjlalq2p3uut312l.apps.googleusercontent.com');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
+
+
+
 
 
 
@@ -545,25 +549,77 @@ app.delete('/api/articles/:id', (req, res) => {
 });
 
 
-/// Ajouter un commentaire à un article de blog
-app.post('/api/articles/:id/comments', (req, res) => {
-  const { name, text } = req.body;
-  const articleId = req.params.id;
+// Avant la configuration de Nodemailer
+console.log('Utilisateur de l\'email:', process.env.EMAIL_USER);
+console.log('Mot de passe de l\'email: [MOT DE PASSE CHARGÉ]'); // Ne jamais afficher le mot de passe réel
 
-  if (!name || !text) {
-    console.error('Nom ou commentaire manquant');
-    return res.status(400).json({ error: 'Le nom et le commentaire sont obligatoires' });
-  }
 
-  const sql = 'INSERT INTO blog_comments (article_id, name, commentaire) VALUES (?, ?, ?)';
-  db.query(sql, [articleId, name, text], (err, result) => {
-    if (err) {
-      console.error('Erreur lors de l\'ajout du commentaire:', err);
-      return res.status(500).json({ error: 'Erreur lors de l\'ajout du commentaire' });
+// Configurez le transporteur de mail
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // ou utilisez un autre service comme Outlook, etc.
+    auth: {
+        user: process.env.EMAIL_USER, // Votre e-mail ici
+        pass: process.env.EMAIL_PASS // Mot de passe d'application ici
     }
-    res.json({ success: true });
-  });
 });
+
+// Fonction pour envoyer un e-mail lors de l'ajout d'un commentaire
+function sendCommentNotification(articleTitle, userName, commentText) {
+    const mailOptions = {
+        from: process.env.EMAIL_USER, 
+        to: 'areis.shenzu@gmail.com',
+        subject: `Nouveau commentaire sur "${articleTitle}"`,
+        text: `Un nouveau commentaire a été posté par ${userName} : "${commentText}"`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log('Erreur lors de l\'envoi de l\'email:', error);
+        }
+        console.log('Email envoyé:', info.response);
+    });
+}
+
+// Ajouter un commentaire à un article de blog
+app.post('/api/articles/:id/comments', (req, res) => {
+    const { name, text } = req.body;
+    const articleId = req.params.id;
+
+    if (!name || !text) {
+        console.error('Nom ou commentaire manquant');
+        return res.status(400).json({ error: 'Le nom et le commentaire sont obligatoires' });
+    }
+
+    // Requête pour récupérer le titre de l'article
+    const getArticleTitleQuery = 'SELECT titre FROM blog_articles WHERE id = ?';
+    db.query(getArticleTitleQuery, [articleId], (err, results) => {
+        if (err) {
+            console.error('Erreur lors de la récupération du titre de l\'article:', err);
+            return res.status(500).json({ error: 'Erreur lors de la récupération du titre de l\'article' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Article non trouvé' });
+        }
+
+        const articleTitle = results[0].titre; // Récupérer le titre de l'article
+
+        // Insérer le commentaire dans la base de données
+        const sql = 'INSERT INTO blog_comments (article_id, name, commentaire) VALUES (?, ?, ?)';
+        db.query(sql, [articleId, name, text], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de l\'ajout du commentaire:', err);
+                return res.status(500).json({ error: 'Erreur lors de l\'ajout du commentaire' });
+            }
+
+            // Envoyer la notification par e-mail
+            sendCommentNotification(articleTitle, name, text);
+
+            res.json({ success: true });
+        });
+    });
+});
+
 
 
 // Supprimer un commentaire d'un article de blog
@@ -625,6 +681,12 @@ app.post('/api/verify-google-token', async (req, res) => {
     res.status(401).json({ success: false });
   }
 });
+
+
+
+
+
+
 
 // Lancement du serveur
 app.listen(PORT, () => {
