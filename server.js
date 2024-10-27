@@ -7,7 +7,7 @@ const multer = require('multer'); // Pour gérer l'upload de fichiers
 const session = require('express-session');
 const dotenv = require('dotenv');
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client('815007391612-1pssr0jnhe9oaqtsvjlalq2p3uut312l.apps.googleusercontent.com');
+const client = new OAuth2Client(process.env.CLIENT_ID);
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 
@@ -662,7 +662,7 @@ app.post('/api/verify-google-token', async (req, res) => {
 
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: '815007391612-1pssr0jnhe9oaqtsvjlalq2p3uut312l.apps.googleusercontent.com',
+      audience: process.env.GOOGLE_OAUTH_AUDIENCE,
     });
     const payload = ticket.getPayload();
     
